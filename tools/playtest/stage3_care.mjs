@@ -18,7 +18,13 @@ try {
   await T.press('e'); await T.step(10);           // fill bowl
   await T.walkTo(11.3, 17.4, { tol: 0.3 });
   s = await log('at trough');
-  await T.press('e'); await T.step(10);           // top up water
+  // top up water; if the dog wanders in and E strokes it instead, wait and retry
+  for (let i = 0; i < 6; i++) {
+    s = await T.st();
+    if (s.prompt === 'Trough is full') break;
+    if (s.prompt !== 'Top up water') { await T.step(30); await T.walkTo(11.3, 17.4, { tol: 0.3, maxFrames: 60 }); continue; }
+    await T.press('e'); await T.step(10);
+  }
   await T.shot(`${OUT}/20_filled.png`);
   await T.press('v'); await T.step(30);           // observe the dog
   // let the dog eat and drink while we watch

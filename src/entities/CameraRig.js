@@ -109,15 +109,15 @@ export class CameraRig {
     const pitch = this.pitch - 0.08 * crouch;
     const off = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(this.yaw) * Math.cos(pitch));
     let ePos = look.clone().addScaledVector(off, dist);
-    // observing: if the keeper stands in the line of sight, orbit round the
-    // animal away from him until the view is clear
-    if (obs && this.obsBlend > 0.3) {
-      const kp = p.pos.clone(); kp.y += 1.0;
-      const d = ePos.clone().sub(look); const L = d.length(); d.divideScalar(L);
-      const rel = kp.sub(look); const t = rel.dot(d);
-      if (t > 0.15 && t < L + 0.3) {
-        rel.addScaledVector(d, -t); rel.y = 0;
-        if (rel.length() < 0.55) this.yaw -= (Math.sign(rel.dot(right)) || 1) * 1.4 * rawDt;
+    // observing: if the view of the animal is walled off (e.g. it sleeps in
+    // the kennel) or the keeper stands in the way, swing round to the
+    // clearest nearby angle, unless the player is steering the camera
+    if (obs && this.obsBlend > 0.3 && this.game.time - this.lastUserInput > 1.5) {
+      this.obsCheckT = (this.obsCheckT || 0) - rawDt;
+      if (this.obsCheckT <= 0) {
+        this.obsCheckT = 0.3;
+        const goal = this.clearObserveYaw(look, dist, pitch, p.pos);
+        if (goal != null) this.yawTarget = goal;
       }
     }
     ePos = this.collide(look, ePos);
@@ -153,6 +153,27 @@ export class CameraRig {
     }
     L = Math.min(L, this.clearLength(from, dir, L));
     return from.clone().addScaledVector(dir, L);
+  }
+
+  /** Observe mode: a better yaw when the current view is blocked, else null. */
+  clearObserveYaw(look, dist, pitch, keeper) {
+    const kp = keeper.clone(); kp.y += 0.9;
+    const score = (yaw) => {
+      const o = new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
+      const clear = this.collide(look, look.clone().addScaledVector(o, dist)).distanceTo(look) / dist;
+      const rel = kp.clone().sub(look); const t = rel.dot(o);
+      rel.addScaledVector(o, -t); rel.y = 0;
+      const blocked = t > 0.1 && t < dist + 0.5 && rel.length() < 0.6;
+      return clear - (blocked ? 0.8 : 0);
+    };
+    const cur = score(this.yawTarget);
+    if (cur > 0.85) return null;
+    let best = null, bestS = cur + 0.05;
+    for (const dy of [0.5, -0.5, 1, -1, 1.6, -1.6, 2.3, -2.3, Math.PI]) {
+      const sc = score(this.yawTarget + dy) - Math.abs(dy) * 0.03;
+      if (sc > bestS) { bestS = sc; best = this.yawTarget + dy; }
+    }
+    return best;
   }
 
   /** Distance along a ray before it enters a bush or trunk (vegetation). */
