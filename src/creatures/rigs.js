@@ -42,5 +42,8 @@ export const RIGS = {
     },
     morphs: {},
     clipWeight: { still: 0.85, moving: 0.25 },
+    // The thigh bones carry most of the hindquarter weights, so lying uses a
+    // wider hind splay, a deeper drop and a slight nose-up tilt.
+    poseTweaks: { lieHindFwd: 0.3, lieHindOut: 0.42, lieDrop: 0.66, lieRearPitch: 0.12 },
   },
 };

@@ -8,7 +8,7 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const page = await browser.newPage({ viewport: { width: W, height: H } });
 const logs = [];
 page.on('console', (m) => { if (['error', 'warning'].includes(m.type())) logs.push(m.type() + ': ' + m.text()); });
-page.on('pageerror', (e) => logs.push('pageerror: ' + e.message));
+page.on('pageerror', async (e) => { console.log('PAGEERROR ' + e.message); await browser.close(); process.exit(2); });
 const t0 = Date.now();
 await page.goto('http://localhost:5173/?shot=1&step=1&' + qs);
 await page.waitForFunction('window.__ready === true', null, { timeout: 300000 });

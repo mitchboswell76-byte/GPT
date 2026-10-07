@@ -84,13 +84,27 @@ export class CameraRig {
     let dist = this.distance;
     const look = p.pos.clone();
     look.y += 1.5 - 0.5 * crouch;
+    // Observe mode: frame a creature instead of the keeper
+    const obs = this.observe;
+    this.obsBlend = damp(this.obsBlend || 0, obs ? 1 : 0, 3, rawDt);
+    if (obs || this.obsBlend > 0.01) {
+      const c = obs || this.lastObserved;
+      if (c) {
+        this.lastObserved = c;
+        const ol = c.pos.clone(); ol.y += c.height * 1.3;
+        look.lerp(ol, this.obsBlend);
+        dist = THREE.MathUtils.lerp(dist, THREE.MathUtils.clamp(this.distance * 0.6 + c.height * 3, 1.4, 6), this.obsBlend);
+      }
+    }
     if (this.focusOverride) {
       const f = this.focusOverride;
+      f.weight = damp(f.weight, f.target ?? 1, 2.5, rawDt);
+      if ((f.target ?? 1) === 0 && f.weight < 0.01) this.focusOverride = null;
       look.lerp(f.pos, f.weight);
       dist = THREE.MathUtils.lerp(dist, f.dist, f.weight);
     }
     const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
-    const shoulder = C.shoulder * clamp((dist - 1.2) / 3, 0.25, 1);
+    const shoulder = C.shoulder * clamp((dist - 1.2) / 3, 0.25, 1) * (1 - (this.obsBlend || 0));
     look.addScaledVector(right, shoulder);
     const pitch = this.pitch - 0.08 * crouch;
     const off = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(this.yaw) * Math.cos(pitch));
@@ -116,7 +130,7 @@ export class CameraRig {
     }
     this.camera.position.copy(this.currentPos);
     this.camera.lookAt(this.currentLook);
-    this.game.focus = building || k > 0.5 ? b.focus.clone() : p.pos.clone();
+    this.game.focus = building || k > 0.5 ? b.focus.clone() : (this.obsBlend > 0.5 && this.lastObserved ? this.lastObserved.pos.clone() : p.pos.clone());
   }
 
   collide(from, to, dist) {
@@ -126,6 +140,20 @@ export class CameraRig {
     const hit = this.ray.intersectObjects(this.occluders, true)[0];
     if (hit) return from.clone().addScaledVector(dir, Math.max(0.6, hit.distance - 0.25));
     return to;
+  }
+
+  /** Frame a two-subject moment (keeper and animal) from the side. */
+  frameMoment(a, b, dist = 3) {
+    const mid = a.clone().lerp(b, 0.5);
+    mid.y = Math.min(a.y, b.y) + 0.55;
+    const ang = Math.atan2(b.x - a.x, b.z - a.z);
+    // choose the side closest to the current view so the move is short
+    const s1 = ang + Math.PI / 2, s2 = ang - Math.PI / 2;
+    const d = (x) => Math.abs(Math.atan2(Math.sin(x - this.yaw), Math.cos(x - this.yaw)));
+    this.yawTarget = (d(s1) < d(s2) ? s1 : s2) + 0.35 * (d(s1) < d(s2) ? -1 : 1);
+    this.pitchTarget = 0.28;
+    this.lastUserInput = this.game.time + 4;
+    this.focusOverride = { pos: mid, dist, weight: this.focusOverride?.weight || 0, target: 1 };
   }
 
   enterBuild() {

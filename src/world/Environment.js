@@ -38,7 +38,7 @@ export class Environment {
     ground.position.y = -10; envScene.add(ground);
     this.envMap = pmrem.fromScene(envScene, 0.02).texture;
     scene.environment = this.envMap;
-    scene.environmentIntensity = 0.6;
+    scene.environmentIntensity = 0.5;
     pmrem.dispose();
 
     this.fogColor = new THREE.Color(0xa9bcc4);
@@ -55,7 +55,7 @@ export class Environment {
     this.sun = sun;
     scene.add(sun, sun.target);
 
-    this.hemi = new THREE.HemisphereLight(0xd8e4f4, 0x5a5a30, 0.42);
+    this.hemi = new THREE.HemisphereLight(0xe6ece8, 0x6e6838, 0.5);
     scene.add(this.hemi);
     this.texel = (sc.right - sc.left) / quality.shadowSize;
   }

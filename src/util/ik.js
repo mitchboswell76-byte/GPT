@@ -101,3 +101,9 @@ export function aimBone(bone, childOrLocal, target, weight = 1) {
   rotateBoneWorld(bone, q);
   bone.updateWorldMatrix(false, true);
 }
+
+/** Place a bone's origin at a world position. */
+export function setBoneWorldPosition(bone, worldPos) {
+  bone.parent.updateWorldMatrix(true, false);
+  bone.position.copy(bone.parent.worldToLocal(worldPos.clone()));
+}

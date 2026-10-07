@@ -232,8 +232,8 @@ export class Grass {
       uWind: { value: new THREE.Vector2(0.32, 0.18) },
     };
     this.group = new THREE.Group();
-    this.near = new GrassLayer(terrain, this.shared, { count: quality.grassNear, radius: 13, height: 0.3, width: 0.026, clump: 1 });
-    this.far = new GrassLayer(terrain, this.shared, { count: quality.grassFar, radius: 48, height: 0.34, width: 0.05, clump: 3, dark: 0.95 });
+    this.near = new GrassLayer(terrain, this.shared, { count: quality.grassNear, radius: 13, height: 0.2, width: 0.024, clump: 1 });
+    this.far = new GrassLayer(terrain, this.shared, { count: quality.grassFar, radius: 48, height: 0.24, width: 0.045, clump: 3, dark: 0.95 });
     this.flowers = new FlowerLayer(this.shared, quality.flowers, 24);
     this.group.add(this.near.mesh, this.far.mesh, this.flowers.mesh);
   }

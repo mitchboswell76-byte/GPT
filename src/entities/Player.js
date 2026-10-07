@@ -90,6 +90,10 @@ export class Player {
       // slow down while turning sharply so feet don't skate
       targetSpeed *= 1 - 0.55 * smoothstep(0.6, 2.4, Math.abs(turn));
     }
+    if (!this.controlsEnabled && this.faceTarget) {
+      const want = Math.atan2(this.faceTarget.x - this.pos.x, this.faceTarget.z - this.pos.z);
+      this.yaw = dampAngle(this.yaw, want, 5, dt);
+    }
     this.speed = damp(this.speed, targetSpeed, targetSpeed > this.speed ? 5.5 : 8, dt);
     if (this.speed < 0.01) this.speed = 0;
     this.moveIntent = len > 0 ? 1 : 0;

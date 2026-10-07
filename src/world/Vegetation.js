@@ -10,14 +10,14 @@ import { forestDensity } from './Terrain.js';
 import { PATH_INDEX, BRIDGE, PUPPY_SPAWN, FALLEN_LOG, OUTPOST } from './WorldLayout.js';
 
 const VARIANTS = [
-  { id: 'oakA', preset: 'Oak Medium', seed: 1203, height: 15, leafTint: 0x9fb27a },
-  { id: 'oakB', preset: 'Oak Medium', seed: 77, height: 13, leafTint: 0x95ad70 },
-  { id: 'oakL', preset: 'Oak Large', seed: 4242, height: 19, leafTint: 0x9cb076 },
-  { id: 'ash', preset: 'Ash Medium', seed: 902, height: 16, leafTint: 0xa3b67e },
-  { id: 'birch', preset: 'Aspen Medium', seed: 51, height: 13, leafTint: 0xb2bf80, bark: 'birch' },
-  { id: 'bushA', preset: 'Bush 1', seed: 11, height: 2.3, leafTint: 0x8fa86a },
-  { id: 'bushB', preset: 'Bush 2', seed: 23, height: 2.0, leafTint: 0x88a266 },
-  { id: 'bushC', preset: 'Bush 3', seed: 35, height: 1.6, leafTint: 0x94ac70 },
+  { id: 'oakA', preset: 'Oak Medium', seed: 1203, height: 15, leafTint: 0x93ad62 },
+  { id: 'oakB', preset: 'Oak Medium', seed: 77, height: 13, leafTint: 0x8aa65a },
+  { id: 'oakL', preset: 'Oak Large', seed: 4242, height: 19, leafTint: 0x91aa5e },
+  { id: 'ash', preset: 'Ash Medium', seed: 902, height: 16, leafTint: 0x9ab466 },
+  { id: 'birch', preset: 'Aspen Medium', seed: 51, height: 13, leafTint: 0xa9bc6a, bark: 'birch' },
+  { id: 'bushA', preset: 'Bush 1', seed: 11, height: 2.3, leafTint: 0x86a25a },
+  { id: 'bushB', preset: 'Bush 2', seed: 23, height: 2.0, leafTint: 0x7e9c54 },
+  { id: 'bushC', preset: 'Bush 3', seed: 35, height: 1.6, leafTint: 0x8ca85c },
 ];
 
 export class Vegetation {
@@ -79,7 +79,7 @@ export class Vegetation {
     });
     const leaves = new THREE.MeshStandardMaterial({
       map: getLeafTexture(o.leaves.type), color: new THREE.Color(v.leafTint), alphaTest: 0.5,
-      side: THREE.DoubleSide, roughness: 0.92, metalness: 0, envMapIntensity: 0.25,
+      side: THREE.DoubleSide, roughness: 0.92, metalness: 0, envMapIntensity: 0.14, emissive: 0x1a2408,
     });
     const wind = this.windUniforms;
     leaves.onBeforeCompile = (sh) => {
@@ -304,28 +304,39 @@ export class Vegetation {
   }
 
   buildLog() {
-    // Moss-covered fallen log where the stray shelters.
-    const L = 4.6, R = 0.34;
-    const g = new THREE.CylinderGeometry(R * 0.9, R, L, 18, 6, false);
+    // Moss-covered fallen oak where the stray shelters: open bark shell with
+    // pale sawn ends, part-sunk into the leaf litter.
+    const L = 6.2, R = 0.38;
+    const g = new THREE.CylinderGeometry(R * 0.82, R, L, 22, 8, true);
     const p = g.attributes.position;
     for (let i = 0; i < p.count; i++) {
       const v = new THREE.Vector3().fromBufferAttribute(p, i);
-      const k = 1 + 0.07 * fbm(v.y * 1.4, Math.atan2(v.z, v.x) * 2, 2);
+      const k = 1 + 0.09 * fbm(v.y * 1.2, Math.atan2(v.z, v.x) * 2, 2) + 0.05 * Math.sin(v.y * 3.1);
       p.setXYZ(i, v.x * k, v.y, v.z * k);
     }
     g.computeVertexNormals();
-    g.rotateZ(Math.PI / 2);
     const bark = new THREE.MeshStandardMaterial({
-      map: getBarkTexture('oak', 'color', { x: 2, y: 2 }), normalMap: getBarkTexture('oak', 'normal', { x: 2, y: 2 }),
-      roughness: 1, color: 0x8f9a72,
+      map: getBarkTexture('oak', 'color', { x: 2, y: 2.5 }), normalMap: getBarkTexture('oak', 'normal', { x: 2, y: 2.5 }),
+      roughness: 1, color: 0x9aa47c,
     });
-    const log = new THREE.Mesh(g, bark);
+    const endMat = new THREE.MeshStandardMaterial({ color: 0x9c8462, roughness: 0.95 });
+    const log = new THREE.Group();
+    const shell = new THREE.Mesh(g, bark);
+    const capA = new THREE.Mesh(new THREE.CircleGeometry(R * 0.8, 20), endMat); capA.position.y = L / 2; capA.rotation.x = -Math.PI / 2;
+    const capB = new THREE.Mesh(new THREE.CircleGeometry(R * 0.98, 20), endMat); capB.position.y = -L / 2; capB.rotation.x = Math.PI / 2;
+    log.add(shell, capA, capB);
+    // a broken branch stub
+    const stub = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.1, 0.8, 8), bark);
+    stub.position.set(0.25, 0.6, 0.1); stub.rotation.z = -0.9;
+    log.add(stub);
+    log.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+    const holder = new THREE.Group();
+    log.rotation.z = Math.PI / 2;
+    holder.add(log);
     const { x, z, yaw } = FALLEN_LOG;
-    log.position.set(x, this.terrain.heightAt(x, z) + R * 0.7, z);
-    log.rotation.y = yaw;
-    log.rotation.z = 0.04;
-    log.castShadow = log.receiveShadow = true;
-    this.group.add(log);
+    holder.position.set(x, this.terrain.heightAt(x, z) + R * 0.55, z);
+    holder.rotation.set(0, yaw, 0.035);
+    this.group.add(holder);
     const dx = Math.cos(yaw) * L * 0.5, dz = -Math.sin(yaw) * L * 0.5;
     this.colliders.addSegment(x - dx, z - dz, x + dx, z + dz, R + 0.1, 'log');
   }

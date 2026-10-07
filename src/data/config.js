@@ -27,7 +27,7 @@ export const CONFIG = {
     hungerDrain: 100 / (7 * 60),    // satiety 100 -> 0 in ~7 minutes
     thirstDrain: 100 / (5 * 60),
     happinessEase: 0.035,           // how quickly happiness approaches its target
-    healthRecover: 0.06,
+    healthRecover: 0.15,
     healthLoss: 0.12,
     trustDecay: 0.0015,
     mealSatiety: 45,
@@ -38,7 +38,7 @@ export const CONFIG = {
   start: {
     resources: { materials: 240, rations: 24 },
     playerPos: [0.6, -2.6],
-    playerYaw: Math.PI, // facing south toward the meadow
+    playerYaw: 0, // facing south (+Z) toward the meadow
   },
 
   player: {

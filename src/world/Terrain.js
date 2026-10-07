@@ -138,6 +138,27 @@ export class Terrain {
     return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz;
   }
 
+  /** March a ray against the height field. Returns hit point or null. */
+  raycast(origin, dir, maxDist = 400) {
+    let t = 0, step = 0.5, prev = null;
+    while (t < maxDist) {
+      const x = origin.x + dir.x * t, y = origin.y + dir.y * t, z = origin.z + dir.z * t;
+      const h = this.heightAt(x, z);
+      if (y <= h) {
+        if (prev === null) return new THREE.Vector3(x, h, z);
+        let lo = prev, hi = t;
+        for (let i = 0; i < 12; i++) {
+          const m = (lo + hi) / 2;
+          const my = origin.y + dir.y * m, mh = this.heightAt(origin.x + dir.x * m, origin.z + dir.z * m);
+          if (my <= mh) hi = m; else lo = m;
+        }
+        return new THREE.Vector3(origin.x + dir.x * hi, origin.y + dir.y * hi, origin.z + dir.z * hi);
+      }
+      prev = t; t += step; step = Math.min(2, step * 1.04);
+    }
+    return null;
+  }
+
   normalAt(x, z, out = new THREE.Vector3()) {
     const e = 0.5;
     return out.set(this.heightAt(x - e, z) - this.heightAt(x + e, z), 2 * e, this.heightAt(x, z - e) - this.heightAt(x, z + e)).normalize();
@@ -235,7 +256,7 @@ export class Terrain {
           grassCol *= mix(vec3(0.74, 1.2, 0.46), vec3(1.0, 1.14, 0.44), mac.g);
           grassCol = mix(grassCol, grassCol * vec3(1.25, 1.0, 0.8), vSplat.w * 0.5);
           vec3 dirtCol = texture2D(uDirt, wuv * 0.31).rgb;
-          vec3 litter = dirtCol * vec3(0.9, 0.82, 0.55) + vec3(0.012, 0.01, 0.0);
+          vec3 litter = dirtCol * vec3(1.25, 1.02, 0.62) + vec3(0.018, 0.012, 0.0);
           litter = mix(litter, grassCol * 0.75, smoothstep(0.35, 0.8, mac2.g) * 0.5);
           vec3 mud = dirtCol * vec3(0.7, 0.74, 0.7);
           vec3 tcol = grassCol;
