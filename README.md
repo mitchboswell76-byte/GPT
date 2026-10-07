@@ -4,6 +4,11 @@ A browser game prototype about keeping, studying and raising creatures. This bui
 is the opening: build a dog enclosure at Hollin Vale, win a stray puppy's trust,
 bring it home, care for it as it grows into an adult, and record it in the Life Atlas.
 
+**Play online:** https://mitchboswell76-byte.github.io/GPT/ (desktop browser, keyboard
+and mouse). Every push to `main` rebuilds it via `.github/workflows/deploy-pages.yml`;
+the repo needs Settings → Pages → Source: **GitHub Actions** (one-time).
+
+Run locally:
 ```
 npm install
 npm run dev
