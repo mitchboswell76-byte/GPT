@@ -62,7 +62,7 @@ export class UI {
     this.status = h('div', 'status-chip hidden');
     this.hud.appendChild(this.status);
     this.keys = h('div', 'keys');
-    this.keys.innerHTML = [['WASD', 'Move'], ['Shift', 'Brisk walk'], ['C', 'Calm pace'], ['E', 'Interact'], ['F', 'Call / stay'], ['V', 'Observe'], ['B', 'Build'], ['L', 'Life Atlas'], ['Tab', 'Creature card'], ['Drag', 'Look'], ['Esc', 'Menu']]
+    this.keys.innerHTML = [['WASD', 'Move'], ['Shift', 'Jog'], ['C', 'Calm pace'], ['E', 'Interact'], ['F', 'Call / stay'], ['V', 'Observe'], ['B', 'Build'], ['L', 'Life Atlas'], ['Tab', 'Creature card'], ['Drag', 'Look'], ['Esc', 'Menu']]
       .map(([k, l]) => `<span><b class="key">${k}</b>${l}</span>`).join('');
     this.hud.appendChild(this.keys);
     this.card = h('div', 'ccard panel off');
@@ -356,7 +356,7 @@ export class UI {
       <div class="setting"><span>Growth speed (prototype)</span><div class="seg">${[1, 4, 12].map((n) => `<button class="btn ${n === gs ? 'on' : ''}" data-g="${n}">${n}×</button>`).join('')}</div></div>
       <div class="setting"><span>Volume</span><input type="range" min="0" max="1" step="0.05" value="${g.audio.volume}" data-vol /></div>
       <div class="setting" style="border:0"><span>Controls</span><span></span></div>
-      <div class="controls"><b class="key">W A S D</b><span>Walk (camera-relative); hold Shift for a brisk walk</span><b class="key">C</b><span>Toggle a calm, slow pace</span><b class="key">Drag</b><span>Orbit the camera; wheel zooms</span><b class="key">E</b><span>Interact (offer food, stroke, gates, bowls)</span><b class="key">F</b><span>Call your dog, or tell it to stay</span><b class="key">V</b><span>Observe: frame the nearest animal (move to stop)</span><b class="key">B</b><span>Construction mode</span><b class="key">L</b><span>Life Atlas</span><b class="key">Tab</b><span>Pin the creature card</span></div>
+      <div class="controls"><b class="key">W A S D</b><span>Walk (camera-relative); hold Shift to jog (startles wary animals)</span><b class="key">C</b><span>Toggle a calm, slow pace</span><b class="key">Drag</b><span>Orbit the camera; wheel zooms</span><b class="key">E</b><span>Interact (offer food, stroke, gates, bowls)</span><b class="key">F</b><span>Call your dog, or tell it to stay</span><b class="key">V</b><span>Observe: frame the nearest animal (move to stop)</span><b class="key">B</b><span>Construction mode</span><b class="key">L</b><span>Life Atlas</span><b class="key">Tab</b><span>Pin the creature card</span></div>
       <div class="row"><button class="btn danger" data-new>New reserve…</button><button class="btn" data-save>Save now</button><button class="btn primary" data-resume>Resume</button></div>`;
     el.querySelectorAll('[data-q]').forEach((b) => b.onclick = () => { localStorage.setItem('cr.quality', b.dataset.q); g.saves.save('quality'); location.reload(); });
     el.querySelectorAll('[data-g]').forEach((b) => b.onclick = () => { g.creatures.growthSpeed = +b.dataset.g; g.state.settings.growthSpeed = +b.dataset.g; this.closeModal(); this.openPause(); });

@@ -10,7 +10,7 @@ npm run dev
 ```
 Open http://localhost:5173 (desktop browser, keyboard and mouse).
 
-Controls: WASD move · Shift brisk walk · C calm pace · drag to look · E interact ·
+Controls: WASD move · Shift jog · C calm pace · drag to look · E interact ·
 F call/stay · V observe · B build · L Life Atlas · Esc menu.
 
 Docs: [project brief](docs/PROJECT_BRIEF.md) · [asset record](docs/ASSETS.md) · [roadmap](docs/ROADMAP.md)

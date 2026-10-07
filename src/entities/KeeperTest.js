@@ -55,7 +55,8 @@ export function startKeeperTest(game) {
     const adult = urlParam('adult') === '1';
     const root = new THREE.Group(); game.scene.add(root);
     const body = new CreatureBody(game, adult ? 'dog_adult' : 'dog_puppy', root);
-    const dp = new THREE.Vector3(x0 + Math.sin(yaw0) * 1.15, 0, z0 + Math.cos(yaw0) * 1.15);
+    const dd = +urlParam('dd', '1.15');
+    const dp = new THREE.Vector3(x0 + Math.sin(yaw0) * dd, 0, z0 + Math.cos(yaw0) * dd);
     dp.y = game.world.groundAt(dp.x, dp.z);
     const dyaw = yaw0 + Math.PI;
     const height = adult ? 0.55 : 0.36;

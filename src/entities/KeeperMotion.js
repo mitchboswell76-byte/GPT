@@ -481,13 +481,18 @@ export class KeeperMotion {
     }
     let target = anyStance ? clamp(dyStance, -0.16, 0.08) : this.pelvisDy;
     target = Math.min(target, dyMax);
-    target += this.poses.pelvisDy || 0;
+    // interaction poses (kneeling) take over the height: an exact offset that
+    // puts the kneeling hip a thigh-length above the knee on the ground
+    if (this.poses.pelvisAbs != null) target = lerp(target, this.poses.pelvisAbs, this.poses.drop);
     target = clamp(target, -0.75, 0.12);
     // critically damped follow, fast enough to stay over the feet
-    const w = 26;
-    const a = w * w * (target - this.pelvisDy) - 2 * w * this.pelvisDyV;
-    this.pelvisDyV += a * dt; this.pelvisDy += this.pelvisDyV * dt;
-    if (this.pelvisDy > dyMax) { this.pelvisDy = dyMax; this.pelvisDyV = Math.min(0, this.pelvisDyV); }
+    // (substepped: a stiff spring integrated at 30 fps would diverge)
+    const w = 26, n = Math.max(1, Math.ceil(dt * 240)), h = dt / n;
+    for (let i = 0; i < n; i++) {
+      const a = w * w * (target - this.pelvisDy) - 2 * w * this.pelvisDyV;
+      this.pelvisDyV += a * h; this.pelvisDy += this.pelvisDyV * h;
+      if (this.pelvisDy > dyMax) { this.pelvisDy = dyMax; this.pelvisDyV = Math.min(0, this.pelvisDyV); }
+    }
     const off = new THREE.Vector3(0, this.pelvisDy, 0).addScaledVector(right, shift);
     if (this.poses.pelvisOffset) off.add(this.poses.pelvisOffset);
     translateBoneWorld(B.Hips, off);
@@ -574,7 +579,7 @@ export class KeeperMotion {
   applyLook(dt) {
     const p = this.player, B = this.B;
     let ty = 0, tp = 0;
-    const lt = p.lookTarget || this.poses.idleLook?.();
+    const lt = p.lookTarget || this.poses.idleLook?.(dt);
     if (lt) {
       const head = B.Head.getWorldPosition(_v1);
       const d = _v2.copy(lt).sub(head);

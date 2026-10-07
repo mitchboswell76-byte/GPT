@@ -35,7 +35,7 @@ Progress autosaves (localStorage) and survives reloads.
 
 ## Controls
 
-WASD move (camera-relative) · Shift brisk walk · C calm pace · drag to orbit, wheel to zoom ·
+WASD move (camera-relative) · Shift jog · C calm pace · drag to orbit, wheel to zoom ·
 E interact · F call / stay · V observe nearest animal · T treat · B construction · L Life Atlas ·
 Tab pin creature card · Esc menu · ` (backtick) prototype tools (growth speed, resources).
 
