@@ -7,6 +7,7 @@ Read `docs/PROJECT_BRIEF.md` (architecture, loop, controls), `docs/ASSETS.md`
 - `npm run dev` — Vite dev server on :5173 (needed by the playtest tools)
 - `npm run build` — production build to `dist/`
 - `npm run assets` — rebuild runtime GLBs from `assets-src/` and regenerate textures
+- `npm run audio` — rebuild `public/assets/audio/` from the pinned recordings in `tools/audio/sources.json`
 - `node tools/playtest/stage1_build.mjs <out> <profile>` then `stage2_puppy.mjs`, `stage3_care.mjs`
   — real-input playthrough in headless Chromium (Q=low|medium|high env var)
 - `node tools/playtest/shot.mjs out.png "q=low&rigtest=dog_puppy&speed=1"` — single frame

@@ -4,3 +4,4 @@ dist/
 .DS_Store
 playtest-out/
 .claude/worktrees/
+tools/audio/.cache/

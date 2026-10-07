@@ -1,0 +1,1291 @@
+{
+ "note": "Generated list of recorded sound sources. Rebuild with: python3 tools/audio/build_audio.py",
+ "items": [
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-191687-A-0.wav"
+   },
+   "window": [
+    0.28,
+    0.63
+   ],
+   "credit": {
+    "author": "UnderlinedDesigns",
+    "title": "Dog Barks.wav",
+    "original": "http://www.freesound.org/people/UnderlinedDesigns/sounds/191687/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-191687-A-0.wav"
+   },
+   "window": [
+    1.77,
+    2.08
+   ],
+   "credit": {
+    "author": "UnderlinedDesigns",
+    "title": "Dog Barks.wav",
+    "original": "http://www.freesound.org/people/UnderlinedDesigns/sounds/191687/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/1-59513-A-0.wav"
+   },
+   "window": [
+    0.0,
+    0.34
+   ],
+   "credit": {
+    "author": "zeshoog",
+    "title": "Blaffende hond2.wav",
+    "original": "http://www.freesound.org/people/zeshoog/sounds/59513/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-155312-A-0.wav"
+   },
+   "window": [
+    2.4,
+    2.73
+   ],
+   "credit": {
+    "author": "Jace",
+    "title": "Dog Barking",
+    "original": "http://www.freesound.org/people/Jace/sounds/155312/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/5-212454-A-0.wav"
+   },
+   "window": [
+    2.68,
+    2.94
+   ],
+   "credit": {
+    "author": "unfa",
+    "title": "Barking",
+    "original": "http://www.freesound.org/people/unfa/sounds/212454/",
+    "licence": "CC-BY",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-182395-A-0.wav"
+   },
+   "window": [
+    0.7,
+    1.17
+   ],
+   "credit": {
+    "author": "pgonsilva",
+    "title": "Big_dog_bark_01.aiff",
+    "original": "http://www.freesound.org/people/pgonsilva/sounds/182395/",
+    "licence": "CC-BY",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/5-231762-A-0.wav"
+   },
+   "window": [
+    0.98,
+    1.35
+   ],
+   "credit": {
+    "author": "davidmenke",
+    "title": "FX_Dog Barking.wav",
+    "original": "http://www.freesound.org/people/davidmenke/sounds/231762/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/2-114280-A-0.wav"
+   },
+   "window": [
+    0.09,
+    0.4
+   ],
+   "credit": {
+    "author": "plingativator",
+    "title": "dogbarks.wav",
+    "original": "http://www.freesound.org/people/plingativator/sounds/114280/",
+    "licence": "CC-BY",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "adult_bark",
+   "group": "dog",
+   "src": {
+    "repo": "AntumMT/mod-sounds",
+    "ref": "b5b9f68389a264d39733331e0a1d89ddc8ce77f8",
+    "path": "sounds_src/sounds_dog_bark.flac"
+   },
+   "window": [
+    0.68,
+    1.13
+   ],
+   "credit": {
+    "author": "ivolipa",
+    "original": "https://freesound.org/s/328730/",
+    "licence": "CC0",
+    "via": "AntumMT/mod-sounds (sources.md)"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/2-114587-A-0.wav"
+   },
+   "window": [
+    0.63,
+    0.87
+   ],
+   "credit": {
+    "author": "InDaHouse20",
+    "title": "Buddy Bark.wav",
+    "original": "http://www.freesound.org/people/InDaHouse20/sounds/114587/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/2-114587-A-0.wav"
+   },
+   "window": [
+    1.55,
+    1.82
+   ],
+   "credit": {
+    "author": "InDaHouse20",
+    "title": "Buddy Bark.wav",
+    "original": "http://www.freesound.org/people/InDaHouse20/sounds/114587/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-163459-A-0.wav"
+   },
+   "window": [
+    0.29,
+    0.67
+   ],
+   "credit": {
+    "author": "LittleBigSounds",
+    "title": "LBS_FX DOG Small Alert Bark001.wav",
+    "original": "http://www.freesound.org/people/LittleBigSounds/sounds/163459/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-180977-A-0.wav"
+   },
+   "window": [
+    3.0,
+    3.41
+   ],
+   "credit": {
+    "author": "Suprasummun",
+    "title": "Barking Dog",
+    "original": "http://www.freesound.org/people/Suprasummun/sounds/180977/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/5-208030-A-0.wav"
+   },
+   "window": [
+    2.05,
+    2.38
+   ],
+   "credit": {
+    "author": "Mewsel",
+    "title": "Chihuahua Barks",
+    "original": "http://www.freesound.org/people/Mewsel/sounds/208030/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-184575-A-0.wav"
+   },
+   "window": [
+    4.37,
+    4.58
+   ],
+   "credit": {
+    "author": "magnus589",
+    "title": "Dog barking outside",
+    "original": "http://www.freesound.org/people/magnus589/sounds/184575/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "AntumMT/mod-sounds",
+    "ref": "b5b9f68389a264d39733331e0a1d89ddc8ce77f8",
+    "path": "sounds_src/sounds_puppy_bark.flac"
+   },
+   "window": [
+    0.09,
+    0.3
+   ],
+   "credit": {
+    "author": "moffet",
+    "original": "https://freesound.org/s/583142/",
+    "licence": "CC0",
+    "via": "AntumMT/mod-sounds (sources.md)"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "AntumMT/mod-sounds",
+    "ref": "b5b9f68389a264d39733331e0a1d89ddc8ce77f8",
+    "path": "sounds_src/sounds_puppy_bark.flac"
+   },
+   "window": [
+    0.6,
+    0.8
+   ],
+   "credit": {
+    "author": "moffet",
+    "original": "https://freesound.org/s/583142/",
+    "licence": "CC0",
+    "via": "AntumMT/mod-sounds (sources.md)"
+   }
+  },
+  {
+   "id": "puppy_bark",
+   "group": "dog",
+   "src": {
+    "repo": "AntumMT/mod-sounds",
+    "ref": "b5b9f68389a264d39733331e0a1d89ddc8ce77f8",
+    "path": "sounds_src/sounds_puppy_bark.flac"
+   },
+   "window": [
+    1.05,
+    1.26
+   ],
+   "credit": {
+    "author": "moffet",
+    "original": "https://freesound.org/s/583142/",
+    "licence": "CC0",
+    "via": "AntumMT/mod-sounds (sources.md)"
+   }
+  },
+  {
+   "id": "puppy_yip",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/5-9032-A-0.wav"
+   },
+   "window": [
+    0.79,
+    0.99
+   ],
+   "credit": {
+    "author": "MisterTood",
+    "title": "Dog bark2.wav",
+    "original": "http://www.freesound.org/people/MisterTood/sounds/9032/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_yip",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/5-9032-A-0.wav"
+   },
+   "window": [
+    1.82,
+    2.02
+   ],
+   "credit": {
+    "author": "MisterTood",
+    "title": "Dog bark2.wav",
+    "original": "http://www.freesound.org/people/MisterTood/sounds/9032/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_yip",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/5-9032-A-0.wav"
+   },
+   "window": [
+    2.12,
+    2.33
+   ],
+   "credit": {
+    "author": "MisterTood",
+    "title": "Dog bark2.wav",
+    "original": "http://www.freesound.org/people/MisterTood/sounds/9032/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_yip",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/2-114587-A-0.wav"
+   },
+   "window": [
+    0.01,
+    0.21
+   ],
+   "credit": {
+    "author": "InDaHouse20",
+    "title": "Buddy Bark.wav",
+    "original": "http://www.freesound.org/people/InDaHouse20/sounds/114587/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_yip",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/2-114587-A-0.wav"
+   },
+   "window": [
+    2.19,
+    2.39
+   ],
+   "credit": {
+    "author": "InDaHouse20",
+    "title": "Buddy Bark.wav",
+    "original": "http://www.freesound.org/people/InDaHouse20/sounds/114587/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "puppy_yip",
+   "group": "dog",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-184575-A-0.wav"
+   },
+   "window": [
+    2.04,
+    2.26
+   ],
+   "credit": {
+    "author": "magnus589",
+    "title": "Dog barking outside",
+    "original": "http://www.freesound.org/people/magnus589/sounds/184575/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015), ESC-10 subset, CC BY 3.0"
+   }
+  },
+  {
+   "id": "dog_eat",
+   "group": "dogfoley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "80-CC0-creature-SFX/eat_01.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "80 CC0 creature SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "dog_eat",
+   "group": "dogfoley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "80-CC0-creature-SFX/eat_02.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "80 CC0 creature SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "dog_eat",
+   "group": "dogfoley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "80-CC0-creature-SFX/eat_03.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "80 CC0 creature SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "dog_eat",
+   "group": "dogfoley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "80-CC0-creature-SFX/eat_04.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "80 CC0 creature SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "dog_sniff",
+   "group": "dogfoley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "80-CC0-creature-SFX/nose.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "80 CC0 creature SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_grass",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_000.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_grass",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_001.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_grass",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_002.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_grass",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_003.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_grass",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_004.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_dirt",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-94344-A-25.wav"
+   },
+   "window": [
+    0.47,
+    0.84
+   ],
+   "credit": {
+    "author": "Ryding",
+    "title": "Fotsteg p\\xe5 grus.wav",
+    "original": "http://www.freesound.org/people/Ryding/sounds/94344/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_dirt",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-94344-A-25.wav"
+   },
+   "window": [
+    1.23,
+    1.6
+   ],
+   "credit": {
+    "author": "Ryding",
+    "title": "Fotsteg p\\xe5 grus.wav",
+    "original": "http://www.freesound.org/people/Ryding/sounds/94344/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_dirt",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-94344-A-25.wav"
+   },
+   "window": [
+    1.95,
+    2.34
+   ],
+   "credit": {
+    "author": "Ryding",
+    "title": "Fotsteg p\\xe5 grus.wav",
+    "original": "http://www.freesound.org/people/Ryding/sounds/94344/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_dirt",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/3-94344-A-25.wav"
+   },
+   "window": [
+    4.02,
+    4.47
+   ],
+   "credit": {
+    "author": "Ryding",
+    "title": "Fotsteg p\\xe5 grus.wav",
+    "original": "http://www.freesound.org/people/Ryding/sounds/94344/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_dirt",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-117627-A-25.wav"
+   },
+   "window": [
+    2.83,
+    3.09
+   ],
+   "credit": {
+    "author": "soundmary",
+    "title": "footsteps - gravel pavement.wav",
+    "original": "http://www.freesound.org/people/soundmary/sounds/117627/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_dirt",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-117627-A-25.wav"
+   },
+   "window": [
+    3.7,
+    4.03
+   ],
+   "credit": {
+    "author": "soundmary",
+    "title": "footsteps - gravel pavement.wav",
+    "original": "http://www.freesound.org/people/soundmary/sounds/117627/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_000.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_001.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_002.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_003.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_004.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-198962-B-25.wav"
+   },
+   "window": [
+    0.58,
+    0.95
+   ],
+   "credit": {
+    "author": "Mydo1",
+    "title": "footsteps on wood",
+    "original": "http://www.freesound.org/people/Mydo1/sounds/198962/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-198962-B-25.wav"
+   },
+   "window": [
+    2.44,
+    2.78
+   ],
+   "credit": {
+    "author": "Mydo1",
+    "title": "footsteps on wood",
+    "original": "http://www.freesound.org/people/Mydo1/sounds/198962/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "step_wood",
+   "group": "step",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-198962-B-25.wav"
+   },
+   "window": [
+    4.35,
+    4.74
+   ],
+   "credit": {
+    "author": "Mydo1",
+    "title": "footsteps on wood",
+    "original": "http://www.freesound.org/people/Mydo1/sounds/198962/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "paw_soft",
+   "group": "paw",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_000.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.45
+  },
+  {
+   "id": "paw_soft",
+   "group": "paw",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_001.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.45
+  },
+  {
+   "id": "paw_soft",
+   "group": "paw",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_002.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.45
+  },
+  {
+   "id": "paw_soft",
+   "group": "paw",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_003.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.45
+  },
+  {
+   "id": "paw_soft",
+   "group": "paw",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_grass_004.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.45
+  },
+  {
+   "id": "paw_wood",
+   "group": "pawwood",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_000.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.8
+  },
+  {
+   "id": "paw_wood",
+   "group": "pawwood",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_001.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.8
+  },
+  {
+   "id": "paw_wood",
+   "group": "pawwood",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_002.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.8
+  },
+  {
+   "id": "paw_wood",
+   "group": "pawwood",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_003.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.8
+  },
+  {
+   "id": "paw_wood",
+   "group": "pawwood",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/footstep_wood_004.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   },
+   "rate": 1.8
+  },
+  {
+   "id": "gate_open",
+   "group": "foley",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/1-51805-B-33.wav"
+   },
+   "window": [
+    0.42,
+    1.85
+   ],
+   "credit": {
+    "author": "kyles",
+    "title": "door hinge squeak creak o,c.aiff",
+    "original": "http://www.freesound.org/people/kyles/sounds/51805/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "gate_open",
+   "group": "foley",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/1-51805-D-33.wav"
+   },
+   "window": [
+    0.04,
+    1.22
+   ],
+   "credit": {
+    "author": "kyles",
+    "title": "door hinge squeak creak o,c.aiff",
+    "original": "http://www.freesound.org/people/kyles/sounds/51805/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "gate_close",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "100-CC0-wood-metal-SFX/wood_close_01.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "100 CC0 wood and metal SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "gate_close",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "100-CC0-wood-metal-SFX/wood_close_02.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "rubberduck (OpenGameArt)",
+    "title": "100 CC0 wood and metal SFX",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "water_pour",
+   "group": "long",
+   "src": {
+    "repo": "karolpiczak/ESC-50",
+    "ref": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "path": "audio/4-172377-A-17.wav"
+   },
+   "window": [
+    0.0,
+    1.6
+   ],
+   "credit": {
+    "author": "runirasmussen",
+    "title": "Pouring Water",
+    "original": "http://www.freesound.org/people/runirasmussen/sounds/172377/",
+    "licence": "CC0",
+    "via": "ESC-50 (K. J. Piczak, 2015); dataset CC BY-NC 3.0, this clip's source recording is CC0"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactWood_heavy_000.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactWood_heavy_001.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactWood_heavy_002.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactWood_heavy_003.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactWood_heavy_004.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactPlank_medium_000.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactPlank_medium_001.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  },
+  {
+   "id": "build_place",
+   "group": "foley",
+   "src": {
+    "repo": "lavenderdotpet/CC0-Public-Domain-Sounds",
+    "ref": "f2b6264f9ab89fabc266914c3654685d68c5a39b",
+    "path": "kenney_impactsounds/Audio/impactPlank_medium_002.ogg"
+   },
+   "window": null,
+   "credit": {
+    "author": "Kenney (kenney.nl)",
+    "title": "Impact Sounds 1.0",
+    "licence": "CC0",
+    "via": "mirrored in lavenderdotpet/CC0-Public-Domain-Sounds"
+   }
+  }
+ ]
+}

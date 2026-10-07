@@ -89,12 +89,40 @@ timber, slate, stone, straw, galvanised metal, soil. Canvas-generated at
 runtime: wildflower atlas, fern frond, stock netting, signs, notice papers,
 smoke puff, water ripple normals.
 
+## Recorded sounds
+
+All dog, footstep and foley sounds are real recordings, built by
+`npm run audio` (`tools/audio/build_audio.py`) from the pinned sources in
+`tools/audio/sources.json`: each source is fetched at a fixed commit, trimmed
+to one event, high-passed, faded and level-matched per group, and encoded as
+mono 96 kbps MP3 (71 files, ~0.5 MB). Per-file credits are generated into
+`public/assets/audio/CREDITS.md`; `src/data/soundFiles.js` is generated too.
+
+| Sounds | Source | Licence |
+|---|---|---|
+| Adult barks (9), puppy barks (9), puppy yips (6) | Freesound recordings via the ESC-10 subset of [ESC-50](https://github.com/karolpiczak/ESC-50) (Piczak 2015), plus two Freesound recordings via AntumMT/mod-sounds (ivolipa, moffet) | ESC-10: CC BY 3.0; originals CC0 or CC BY (per file in CREDITS.md) — **attribution required** |
+| Keeper steps on grass and boards; dog paws; building thuds | Kenney "Impact Sounds" (mirrored in lavenderdotpet/CC0-Public-Domain-Sounds) | CC0 |
+| Keeper steps on gravel/dirt and boards; gate hinge; water pour | CC0 Freesound recordings (Ryding, soundmary, Mydo1, kyles, runirasmussen) taken from ESC-50 clips | Originals CC0. ESC-50 as a whole is CC BY-NC; before a commercial release, swap these for the Freesound originals linked in CREDITS.md (same recordings) |
+| Chewing, sniffing, gate latch | rubberduck's CC0 packs (OpenGameArt) | CC0 — foley, not recordings of a dog |
+
+Paw sounds are the footstep recordings shortened and pitched up. Puppy barks
+are pitched down gradually as the puppy grows.
+
+**Still missing** (the code plays them as soon as files exist; add entries to
+`sources.json` or drop files in and list them in `soundFiles.js`): dog
+**whine** (a puppy yips softly instead; adults stay quiet), **panting**,
+**lapping**, **body shake**, and **kibble pouring** (synthesised fallback). No
+openly licensed recordings of these were reachable from this build
+environment (only GitHub and package registries). Freesound has CC0
+candidates worth checking, e.g. "dog whine.wav" by jedg (freesound.org/s/505827)
+and "Dog Whining" by Jace (freesound.org/s/155321).
+
 ## Assets that would most improve the next build
 
 1. Dog clips for the existing rigs: walk, trot, gallop, sit, lie-down transition,
    sleep curl, eat/drink, play bow, shake, scratch — or a matched puppy/adult pair
    that ships with them.
 2. Keeper clips: jog/run, crouch idle, kneel, reach/offer, stroke, carry, hammer.
-3. Dog vocalisations (whine, yip, bark, pant) and foley (lapping, footsteps on
-   timber/grass) as real recordings.
+3. Real recordings of a dog whining, panting, lapping and shaking off, and dry
+   food pouring into a bowl (see "Recorded sounds").
 4. Hair mesh for the keeper if the original exists.

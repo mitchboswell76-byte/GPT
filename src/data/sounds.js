@@ -1,7 +1,11 @@
-// Recorded sound manifest. Files live in public/assets/audio/ and are listed
-// with their source and licence in docs/ASSETS.md. Each id may have several
-// variants; SoundBank picks one at random without immediate repeats.
+// Recorded sound manifest: playback settings per id. The files themselves are
+// built by tools/audio/build_audio.py (sources and licences in
+// tools/audio/sources.json and public/assets/audio/CREDITS.md) and listed in
+// the generated soundFiles.js. Ids without files fall back to synthesis or
+// stay silent. SoundBank picks a variant at random without immediate repeats.
 // volume: base gain, pitch: ± playback-rate jitter, trim: [start, end] seconds.
+import { SOUND_FILES } from './soundFiles.js';
+
 const A = (p) => 'assets/audio/' + p;
 
 export const SOUNDS = {
@@ -30,5 +34,7 @@ export const SOUNDS = {
   water_pour: { files: [], volume: 0.55, pitch: 0.04 },
   build_place: { files: [], volume: 0.5, pitch: 0.08 },
 };
+
+for (const [id, def] of Object.entries(SOUNDS)) def.files = SOUND_FILES[id] || def.files;
 
 export { A as audioPath };

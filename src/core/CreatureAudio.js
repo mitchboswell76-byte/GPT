@@ -1,9 +1,12 @@
 // Drives recorded dog sounds from creature state and events: vocalisations
-// with cooldowns, looping pant / lap / eat voices, sniffs and shakes.
+// with cooldowns, chewing, sniffs, and looping pant / lap voices when those
+// recordings exist.
 // Kept outside the creature code so behaviour and sound stay decoupled.
 import { CONFIG } from '../data/config.js';
 
 const now = () => performance.now() / 1000;
+// id -> [fallback id, gain]; adults have no whine recording, so they stay quiet
+const FALLBACK = { puppy_whine: ['puppy_yip', 0.45], puppy_yip: ['puppy_bark', 0.8], puppy_bark: ['puppy_yip', 1], adult_whine: null };
 
 export class CreatureAudio {
   constructor(game, bank) {
@@ -12,7 +15,8 @@ export class CreatureAudio {
     this.state = new Map(); // uid -> {nextVocal, lastAct, ...}
     const E = game.events;
     const voice = (uid, kind, delay = 0) => this.vocal(this.c(uid), kind, delay);
-    E.on('creature:noticed', (e) => voice(e.uid, 'whine', 0.4));
+    // a stray that notices the keeper gives a soft alert bark
+    E.on('creature:noticed', (e) => this.vocal(this.c(e.uid), 'bark', 0.4, false, 0.55));
     E.on('creature:startled', (e) => voice(e.uid, 'bark'));
     E.on('creature:befriended', (e) => { voice(e.uid, 'yip'); voice(e.uid, 'yip', 0.45); });
     E.on('creature:recalled', (e) => voice(e.uid, 'yip', 0.2));
@@ -29,26 +33,34 @@ export class CreatureAudio {
 
   isAdult(c) { return c.r.growth >= CONFIG.growth.adultSwapAt; }
 
-  posOf(c, dy = 0.4) {
+  posOf(c) {
     const h = c.headPosition?.() || c.pos;
-    return { x: h.x, y: h.y + dy * 0, z: h.z };
+    return { x: h.x, y: h.y, z: h.z };
   }
 
-  /** kind: whine | yip | bark */
-  vocal(c, kind, delay = 0, force = false) {
-    if (!c) return;
+  /**
+   * kind: whine | yip | bark. Missing recordings fall back along FALLBACK
+   * (a puppy without whines yips softly instead); returns false when nothing
+   * suitable exists.
+   */
+  vocal(c, kind, delay = 0, force = false, volume = 1) {
+    if (!c) return false;
     const s = this.st(c);
     const t = now();
-    if (!force && t < s.nextVocal && !delay) return;
+    if (!force && t < s.nextVocal && !delay) return false;
     const adult = this.isAdult(c);
-    const id = adult ? (kind === 'whine' ? 'adult_whine' : 'adult_bark') : (kind === 'whine' ? 'puppy_whine' : kind === 'yip' ? 'puppy_yip' : 'puppy_bark');
-    const fallback = { adult_whine: 'puppy_whine', adult_bark: 'puppy_bark', puppy_bark: 'puppy_yip', puppy_yip: 'puppy_bark' };
-    const use = this.bank.has(id) ? id : fallback[id];
-    if (!use || !this.bank.has(use)) return;
+    let id = adult ? (kind === 'whine' ? 'adult_whine' : 'adult_bark') : `puppy_${kind}`;
+    let gain = volume * (adult && kind === 'yip' ? 0.6 : 1);
+    for (let hops = 0; id && !this.bank.has(id); hops++) {
+      if (hops > 3) return false;
+      gain *= FALLBACK[id]?.[1] ?? 1; id = FALLBACK[id]?.[0];
+    }
+    if (!id) return false;
     // growing puppies drop in pitch toward adulthood
     const rate = adult ? 1 : 1.12 - 0.18 * Math.min(1, c.r.growth / CONFIG.growth.adultSwapAt);
-    this.bank.play(use, { pos: this.posOf(c), rate, delay });
+    this.bank.play(id, { pos: this.posOf(c), rate, delay, volume: gain });
     s.nextVocal = t + delay + 3 + Math.random() * 3;
+    return true;
   }
 
   update(dt) {
@@ -65,7 +77,11 @@ export class CreatureAudio {
       // looping voices
       this.bank.loop(c.r.uid + ':pant', 'dog_pant', { pos, volume: d < 30 ? Math.max(0, (c.pant || 0) - 0.15) * 0.9 : 0, rate: this.isAdult(c) ? 0.92 : 1.12 });
       this.bank.loop(c.r.uid + ':lap', 'dog_lap', { pos, volume: act === 'drink' && eating ? 1 : 0 });
-      this.bank.loop(c.r.uid + ':eat', 'dog_eat', { pos, volume: (act === 'eat' && eating) || c.offerSession?.phase === 'eat' ? 1 : 0 });
+      // chewing: separate recorded chews at an irregular rhythm
+      if (((act === 'eat' && eating) || c.offerSession?.phase === 'eat') && t > (s.nextChew || 0)) {
+        this.bank.play('dog_eat', { pos, volume: this.isAdult(c) ? 1 : 0.75, rate: this.isAdult(c) ? 0.92 : 1.08 });
+        s.nextChew = t + 0.42 + Math.random() * 0.35;
+      }
       // one-shots on activity changes
       if (act !== s.lastAct) {
         if (act === 'sniff') this.bank.play('dog_sniff', { pos });
@@ -78,7 +94,7 @@ export class CreatureAudio {
       if (t > s.nextIdle) {
         s.nextIdle = t + 7 + Math.random() * 9;
         if (c.r.status === 'wild' && d < 12 && !c.offerSession && Math.random() < 0.55) this.vocal(c, 'whine');
-        else if (c.state === 'follow' && d > 12) this.vocal(c, 'whine');
+        else if (c.state === 'follow' && d > 12) this.vocal(c, 'yip');
         else if (c.r.status === 'resident' && c.r.stats.hunger < 30 && d < 10 && Math.random() < 0.6) this.vocal(c, 'whine');
         else if (act === 'play' && Math.random() < 0.5) this.vocal(c, Math.random() < 0.5 ? 'yip' : 'bark');
       }

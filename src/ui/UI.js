@@ -384,7 +384,9 @@ export class UI {
       <div class="sub">${esc(CONFIG.reserveName)} — a keeper’s field station at the edge of the woods.</div>
       <div class="load"><i></i></div><div class="lbl">Preparing the reserve…</div>
       <div class="row hidden">${hasSave ? '<button class="btn primary" data-cont>Continue</button><button class="btn" data-new>New reserve</button>' : '<button class="btn primary" data-new>Begin</button>'}</div></div>
-      <div class="credit">Adult Labrador model: “Labrador Dog” by kenchoo, CC-BY-4.0. Trees: ez-tree (MIT).</div>`;
+      <div class="credit">Adult Labrador model: “Labrador Dog” by kenchoo, CC-BY-4.0. Trees: ez-tree (MIT).
+        Dog recordings: Freesound contributors via ESC-50 (K. J. Piczak), CC BY 3.0; footsteps and impacts: Kenney (CC0).
+        <a href="assets/audio/CREDITS.md" target="_blank" rel="noopener">Full sound credits</a></div>`;
     this.root.appendChild(el);
     return el;
   }
