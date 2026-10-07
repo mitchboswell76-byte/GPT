@@ -5,8 +5,9 @@ is the opening: build a dog enclosure at Hollin Vale, win a stray puppy's trust,
 bring it home, care for it as it grows into an adult, and record it in the Life Atlas.
 
 **Play online:** https://mitchboswell76-byte.github.io/GPT/ (desktop browser, keyboard
-and mouse). Every push to `main` rebuilds it via `.github/workflows/deploy-pages.yml`;
-the repo needs Settings → Pages → Source: **GitHub Actions** (one-time).
+and mouse). Every push to `main` rebuilds the game and publishes it to the `gh-pages`
+branch (`.github/workflows/deploy-pages.yml`). One-time setting: Settings → Pages →
+Deploy from a branch → **gh-pages**, folder **/ (root)**.
 
 Run locally:
 ```

@@ -10,6 +10,35 @@
     <div id="viewport"></div>
     <div id="ui"></div>
   </div>
+  <script>
+    // If the game fails to start, say why instead of leaving a blank page.
+    // Serving raw source fails at once; any other error only counts if the
+    // game still has not finished loading 15 s later (harmless hiccups pass).
+    (function () {
+      var shown = false;
+      function show(msg, source) {
+        if (shown || window.__ready) return;
+        shown = true;
+        var d = document.createElement('div');
+        d.id = 'boot-error';
+        d.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#1d2118;color:#efe9d8;font:16px/1.5 system-ui,sans-serif;text-align:center;z-index:99';
+        d.innerHTML = '<div style="max-width:560px"><h2 style="margin:0 0 12px;font-weight:600">Creature Reserve could not start</h2>' +
+          (source ? '<p>This address is serving the source code, not the built game. In the repository, set Settings &rarr; Pages to deploy from the <b>gh-pages</b> branch.</p>'
+                  : '<p>This game needs a desktop browser with WebGL 2 (recent Chrome, Edge, Firefox or Safari). Try reloading the page.</p>') +
+          '<p style="opacity:.6;font-size:13px">' + String(msg).replace(/</g, '&lt;') + '</p></div>';
+        document.body.appendChild(d);
+      }
+      function fail(msg) {
+        if (/resolve module specifier|bare specifier|Unexpected token|MIME type/i.test(msg)) return show(msg, true);
+        setTimeout(function () { show(msg, false); }, 15000);
+      }
+      window.addEventListener('error', function (e) {
+        if (e instanceof ErrorEvent) fail(e.message);
+        else if (e.target && e.target.tagName === 'SCRIPT') fail('Could not load ' + e.target.src);
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) { fail((e.reason && e.reason.message) || String(e.reason)); });
+    })();
+  </script>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
