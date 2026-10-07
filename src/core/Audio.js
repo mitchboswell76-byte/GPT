@@ -1,6 +1,8 @@
 // Web Audio: an ambience bed, a positional stream, wind, and small
 // synthesised effects. Starts on the first user gesture (browser policy).
 import { clamp } from '../util/noise.js';
+import { SoundBank } from './SoundBank.js';
+import { CreatureAudio } from './CreatureAudio.js';
 
 export class Audio {
   constructor(game) {
@@ -9,16 +11,16 @@ export class Audio {
     this.volume = game.state?.settings?.volume ?? 0.8;
     this.muted = false;
     game.events.on('footstep', (e) => this.footstep(e));
-    game.events.on('build:placed', (e) => this.thunk(e.id === 'fence' ? 0.8 : 1));
+    game.events.on('build:placed', (e) => { if (!this.sample('build_place')) this.thunk(e.id === 'fence' ? 0.8 : 1); });
     game.events.on('build:removed', () => this.thunk(0.6, 140));
     game.events.on('build:denied', () => this.blip(180, 0.12, 'triangle', 0.05));
-    game.events.on('gate', () => this.gate());
+    game.events.on('gate', (e) => this.gate(e));
     game.events.on('objective', () => this.chime([523.25, 659.25], 0.06));
     game.events.on('research', () => this.chime([783.99], 0.04));
     game.events.on('creature:befriended', () => this.chime([392, 493.88, 587.33, 783.99], 0.07));
     game.events.on('creature:settled', () => this.chime([440, 554.37, 659.25], 0.06));
     game.events.on('creature:stage', () => this.chime([523.25, 783.99, 1046.5], 0.06));
-    game.events.on('care', () => this.pour());
+    game.events.on('care', (e) => this.pour(e));
     game.events.on('ui:click', () => this.blip(660, 0.05, 'sine', 0.035));
   }
 
@@ -28,6 +30,10 @@ export class Audio {
     if (!AC) return;
     const ctx = this.ctx = new AC();
     this.master = ctx.createGain(); this.master.gain.value = this.volume; this.master.connect(ctx.destination);
+    // recorded samples (dog, footsteps, foley)
+    this.bank = new SoundBank(ctx, this.master);
+    this.bank.preload();
+    this.creatureAudio = new CreatureAudio(this.game, this.bank);
     // white noise source shared by several voices
     const len = ctx.sampleRate * 2;
     this.noise = ctx.createBuffer(1, len, ctx.sampleRate);
@@ -57,9 +63,17 @@ export class Audio {
   setVolume(v) { this.volume = v; if (this.master) this.master.gain.value = this.muted ? 0 : v; }
   toggleMute() { this.muted = !this.muted; this.setVolume(this.volume); return this.muted; }
 
+  /** Play a recorded sample if one is available; returns true if it played. */
+  sample(id, opts) {
+    if (!this.bank?.has(id)) return false;
+    return !!this.bank.play(id, opts);
+  }
+
   update(dt) {
     if (!this.ctx) return;
     const g = this.game, p = g.player.pos, t = this.ctx.currentTime;
+    this.bank.listen(g.camera);
+    this.creatureAudio.update(dt);
     const wd = g.world.terrain.waterDist(p.x, p.z);
     const gain = 0.22 * Math.pow(clamp(1 - wd / 28, 0, 1), 2);
     this.streamGain.gain.setTargetAtTime(gain, t, 0.3);
@@ -88,6 +102,15 @@ export class Audio {
     if (d > 25) return;
     const onWood = g.world.outpost.bridgeHeight(e.x, e.z) !== null || g.world.outpost.porchHeight(e.x, e.z) !== null;
     const att = clamp(1 - d / 25, 0, 1);
+    const y = g.world.groundAt(e.x, e.z);
+    if (e.who === 'player') {
+      const sp = g.world.terrain.splatAt(e.x, e.z);
+      const id = onWood ? 'step_wood' : sp.path > 0.5 || sp.bank > 0.5 ? 'step_dirt' : 'step_grass';
+      if (this.sample(id, { pos: { x: e.x, y, z: e.z }, volume: clamp(e.speed / 1.65, 0.55, 1.35), rate: e.speed > 2.2 ? 1.06 : 1 })) return;
+    } else {
+      const id = onWood ? 'paw_wood' : 'paw_soft';
+      if (this.sample(id, { pos: { x: e.x, y, z: e.z }, volume: clamp((e.size || 0.2) * 3.2, 0.35, 1.2) })) return;
+    }
     if (e.who === 'player') {
       if (onWood) { this.burst({ dur: 0.09, freq: 420, type: 'bandpass', q: 3, gain: 0.16 * att }); this.blip(110 + Math.random() * 20, 0.06, 'sine', 0.05 * att); }
       else { const sp = g.world.terrain.splatAt(e.x, e.z); this.burst({ dur: 0.11, freq: sp.path > 0.5 ? 1400 : 2400, type: sp.path > 0.5 ? 'bandpass' : 'highpass', q: 0.8, gain: (sp.path > 0.5 ? 0.09 : 0.05) * att * clamp(e.speed / 1.6, 0.5, 1.3) }); }
@@ -123,8 +146,11 @@ export class Audio {
     this.burst({ dur: 0.12, freq: 600, type: 'lowpass', gain: 0.12 * gain });
   }
 
-  gate() {
+  gate(e = {}) {
     if (!this.ctx) return;
+    const ed = this.game.structures?.edges.get(e.key);
+    const pos = ed ? { x: ed.e.cx, y: this.game.world.groundAt(ed.e.cx, ed.e.cz) + 0.8, z: ed.e.cz } : undefined;
+    if (this.sample(e.open ? 'gate_open' : 'gate_close', { pos })) return;
     const ctx = this.ctx, t = ctx.currentTime;
     const o = ctx.createOscillator(); o.type = 'sawtooth';
     o.frequency.setValueAtTime(140, t); o.frequency.linearRampToValueAtTime(190, t + 0.35);
@@ -134,7 +160,9 @@ export class Audio {
     setTimeout(() => this.thunk(0.5, 160), 380);
   }
 
-  pour() {
+  pour(e = {}) {
+    if (e.type === 'fill-food' && this.sample('kibble_pour')) return;
+    if (e.type === 'fill-water' && this.sample('water_pour')) return;
     this.burst({ dur: 0.6, freq: 1800, type: 'bandpass', q: 1.2, gain: 0.06 });
   }
 }
