@@ -27,7 +27,7 @@ export class Tester {
   constructor(page, context, browser, logs) { this.page = page; this.context = context; this.browser = browser; this.logs = logs; this.frames = 0; }
 
   async open(qs) {
-    await this.page.goto('http://localhost:5173/?step=1&' + qs);
+    await this.page.goto(`http://localhost:${process.env.PORT || 5173}/?step=1&` + qs);
     await this.page.waitForFunction('window.__ready === true', null, { timeout: 300000 });
   }
 

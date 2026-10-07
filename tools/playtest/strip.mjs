@@ -7,7 +7,7 @@ const page = await browser.newPage({ viewport: { width: W, height: H } });
 const logs = [];
 page.on('console', (m) => { if (m.type() === 'error') logs.push(m.text()); });
 page.on('pageerror', async (e) => { console.log('PAGEERROR ' + e.message); await browser.close(); process.exit(2); });
-await page.goto('http://localhost:5173/?shot=1&step=1&' + qs);
+await page.goto(`http://localhost:${process.env.PORT || 5173}/?shot=1&step=1&` + qs);
 await page.waitForFunction('window.__ready === true', null, { timeout: 300000 });
 await page.evaluate((n) => window.__game.step(n, 1 / 30, false), +warm);
 for (let i = 0; i < +count; i++) {
