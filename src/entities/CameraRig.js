@@ -104,12 +104,12 @@ export class CameraRig {
       dist = THREE.MathUtils.lerp(dist, f.dist, f.weight);
     }
     const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
-    const shoulder = C.shoulder * clamp((dist - 1.2) / 3, 0.25, 1) * (1 - (this.obsBlend || 0));
+    const shoulder = C.shoulder * clamp((dist - 1.2) / 3, 0.25, 1) * (1 - (this.obsBlend || 0)) * (1 - (this.focusOverride?.weight || 0));
     look.addScaledVector(right, shoulder);
     const pitch = this.pitch - 0.08 * crouch;
     const off = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(this.yaw) * Math.cos(pitch));
     let ePos = look.clone().addScaledVector(off, dist);
-    ePos = this.collide(look, ePos, dist);
+    ePos = this.collide(look, ePos);
     const ground = this.game.world.groundAt(ePos.x, ePos.z) + 0.35;
     if (ePos.y < ground) ePos.y = ground;
 
@@ -133,25 +133,49 @@ export class CameraRig {
     this.game.focus = building || k > 0.5 ? b.focus.clone() : (this.obsBlend > 0.5 && this.lastObserved ? this.lastObserved.pos.clone() : p.pos.clone());
   }
 
-  collide(from, to, dist) {
-    if (!this.occluders.length) return to;
-    const dir = to.clone().sub(from); const L = dir.length(); dir.divideScalar(L);
-    this.ray.set(from, dir); this.ray.far = L;
-    const hit = this.ray.intersectObjects(this.occluders, true)[0];
-    if (hit) return from.clone().addScaledVector(dir, Math.max(0.6, hit.distance - 0.25));
-    return to;
+  collide(from, to) {
+    const dir = to.clone().sub(from); let L = dir.length(); dir.divideScalar(L);
+    if (this.occluders.length) {
+      this.ray.set(from, dir); this.ray.far = L;
+      const hit = this.ray.intersectObjects(this.occluders, true)[0];
+      if (hit) L = Math.max(0.6, hit.distance - 0.25);
+    }
+    L = Math.min(L, this.clearLength(from, dir, L));
+    return from.clone().addScaledVector(dir, L);
+  }
+
+  /** Distance along a ray before it enters a bush or trunk (vegetation). */
+  clearLength(from, dir, L) {
+    const veg = this.game.world.vegetation;
+    if (!veg?.blocksCamera) return L;
+    for (let t = 0.6; t <= L; t += 0.2) {
+      if (veg.blocksCamera(from.x + dir.x * t, from.y + dir.y * t, from.z + dir.z * t)) return Math.max(0.6, t - 0.25);
+    }
+    return L;
   }
 
   /** Frame a two-subject moment (keeper and animal) from the side. */
   frameMoment(a, b, dist = 3) {
-    const mid = a.clone().lerp(b, 0.5);
+    // centre on the space just in front of the keeper, where the animal ends up
+    const toB = b.clone().sub(a).setY(0);
+    const mid = a.clone().addScaledVector(toB.normalize(), 0.75);
     mid.y = Math.min(a.y, b.y) + 0.55;
     const ang = Math.atan2(b.x - a.x, b.z - a.z);
-    // choose the side closest to the current view so the move is short
-    const s1 = ang + Math.PI / 2, s2 = ang - Math.PI / 2;
+    // Side-on views first (nearest to the current view), then over the
+    // keeper's shoulder; take the first whose line of sight is clear of bushes.
     const d = (x) => Math.abs(Math.atan2(Math.sin(x - this.yaw), Math.cos(x - this.yaw)));
-    this.yawTarget = (d(s1) < d(s2) ? s1 : s2) + 0.35 * (d(s1) < d(s2) ? -1 : 1);
-    this.pitchTarget = 0.28;
+    const s1 = ang + Math.PI / 2 - 0.35, s2 = ang - Math.PI / 2 + 0.35;
+    const cands = (d(s1) < d(s2) ? [s1, s2] : [s2, s1]).concat([ang + Math.PI - 0.5, ang + Math.PI + 0.5, ang + Math.PI, ang + Math.PI / 2 - 0.9, ang - Math.PI / 2 + 0.9]);
+    const pitch = 0.28;
+    let best = cands[0], bestLen = -1;
+    for (const y of cands) {
+      const dir = new THREE.Vector3(Math.sin(y) * Math.cos(pitch), Math.sin(pitch), Math.cos(y) * Math.cos(pitch));
+      const len = this.clearLength(mid, dir, dist);
+      if (len >= dist - 0.01) { best = y; bestLen = len; break; }
+      if (len > bestLen) { bestLen = len; best = y; }
+    }
+    this.yawTarget = best;
+    this.pitchTarget = pitch;
     this.lastUserInput = this.game.time + 4;
     this.focusOverride = { pos: mid, dist, weight: this.focusOverride?.weight || 0, target: 1 };
   }

@@ -99,5 +99,5 @@ export const OUTPOST = {
 };
 
 export const PUPPY_SPAWN = { x: -58.5, z: 39.5 };
-export const FALLEN_LOG = { x: -60.2, z: 42.2, yaw: 0.6 };
+export const FALLEN_LOG = { x: -60.2, z: 42.2, yaw: -1.1 };
 export const WOODLAND_EDGE_X = -45;

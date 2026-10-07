@@ -31,6 +31,24 @@ export class Vegetation {
     this.rng = mulberry32(2024);
     this.protos = new Map();
     this.placements = new Map();
+    this.blockGrid = new Map(); // camera clearance: bushes and trunks
+  }
+
+  addBlocker(x, y, z, r, h) {
+    const b = { x, y, z, r, h };
+    for (let i = Math.floor((x - r) / 4); i <= Math.floor((x + r) / 4); i++) for (let j = Math.floor((z - r) / 4); j <= Math.floor((z + r) / 4); j++) {
+      const k = i * 7919 + j;
+      if (!this.blockGrid.has(k)) this.blockGrid.set(k, []);
+      this.blockGrid.get(k).push(b);
+    }
+  }
+
+  /** Is a camera at (x, y, z) inside a bush or a trunk? */
+  blocksCamera(x, y, z) {
+    const list = this.blockGrid.get(Math.floor(x / 4) * 7919 + Math.floor(z / 4));
+    if (!list) return false;
+    for (const b of list) if (y < b.y + b.h && (x - b.x) ** 2 + (z - b.z) ** 2 < b.r * b.r) return true;
+    return false;
   }
 
   build() {
@@ -117,6 +135,9 @@ export class Vegetation {
     if (!this.placements.has(id)) this.placements.set(id, []);
     const y = this.terrain.heightAt(x, z) - 0.15 * scale;
     this.placements.get(id).push({ x, y, z, scale, yaw });
+    const P = this.protos.get(id);
+    if (P?.isBush) this.addBlocker(x, y, z, 1.05 * scale, 2.1 * scale);
+    else if (P) this.addBlocker(x, y, z, P.trunkR * scale + 0.3, 8);
   }
 
   clearOf(x, z, r) {
@@ -366,7 +387,7 @@ export class Vegetation {
       map: getBarkTexture('oak', 'color', { x: 2, y: 2.5 }), normalMap: getBarkTexture('oak', 'normal', { x: 2, y: 2.5 }),
       roughness: 1, color: 0x9aa47c,
     });
-    const endMat = new THREE.MeshStandardMaterial({ color: 0x9c8462, roughness: 0.95 });
+    const endMat = new THREE.MeshStandardMaterial({ color: 0x6a5a42, roughness: 1 });
     const log = new THREE.Group();
     const shell = new THREE.Mesh(g, bark);
     const capA = new THREE.Mesh(new THREE.CircleGeometry(R * 0.8, 20), endMat); capA.position.y = L / 2; capA.rotation.x = -Math.PI / 2;

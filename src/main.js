@@ -13,6 +13,7 @@ import { startRigTest } from './creatures/RigTest.js';
 
 const game = new Game(document.getElementById('viewport'));
 window.__game = game;
+window.__THREE = THREE; // debugging and playtest probes
 
 if (urlParam('rigtest')) {
   // Debug: procedural rig viewer (?rigtest=dog_puppy&speed=1&pose=lie)

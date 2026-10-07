@@ -568,6 +568,7 @@ export class Creature {
           break;
         }
         this.brake(dt);
+        if (this.poseTarget !== 'eat') this.poseTarget = null; // stand before turning to the bowl
         const mouth = it.obj.localToWorld(it.obj.userData.mouth.clone());
         if (this.turnToward(dt, mouth.x, mouth.z) < 0.25) {
           this.poseTarget = 'eat'; this.look.target = mouth;

@@ -74,12 +74,14 @@ src/
          buildables.js    construction catalogue
   world/ Terrain.js       analytic height + 1 m grid; masks; splat shader
          Grass.js         GPU grass/flowers pinned to world cells around the camera
-         Vegetation.js    ez-tree trees/bushes (tiled instancing), ferns, reeds, far tree line, fallen log
+         Vegetation.js    ez-tree trees/bushes (tiled instancing), ferns, reeds, impostor far tree line,
+                          fallen log, camera clearance grid for bushes/trunks
          Water.js         stream ribbon; Outpost.js cabin/shed/supplies/bridge
          Environment.js   sky, sun, shadows, fog, IBL; Colliders.js 2D collision world
          WorldLayout.js   stream course, paths, bridge, points of interest
   entities/ Player.js     movement synced to clip speed; look-at, crouch and arm IK
-            CameraRig.js  close orbit camera, build camera, moment framing, observe mode
+            CameraRig.js  close orbit camera, build camera, moment framing (picks a side
+                          with a clear view), observe mode, collision with buildings/kennels/bushes
   creatures/ rigs.js      bone maps per quadruped rig
              QuadrupedRig.js  procedural gait + IK + poses (see below)
              CreatureBody.js  one model instance + idle clip + rig
