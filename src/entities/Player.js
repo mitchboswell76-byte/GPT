@@ -113,7 +113,7 @@ export class Player {
       if (this.speed < 0.45 && a > 1.25) targetSpeed = 0;
       else targetSpeed *= 1 - 0.62 * smoothstep(0.45, 1.7, a);
     }
-    if (this.motion.poses.active) targetSpeed = 0;
+    if (this.motion.poses.active || this.motion.poses.pending) targetSpeed = 0;
     this.targetSpeed = len > 0 ? Math.max(targetSpeed, 0.001) : 0;
     const accel = targetSpeed > this.speed ? (this.speed < 0.3 ? 3.6 : 4.4) : 6.5;
     this.speed = damp(this.speed, targetSpeed, accel, dt);

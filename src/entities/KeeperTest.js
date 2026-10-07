@@ -56,9 +56,10 @@ export function startKeeperTest(game) {
     const root = new THREE.Group(); game.scene.add(root);
     const body = new CreatureBody(game, adult ? 'dog_adult' : 'dog_puppy', root);
     const dd = +urlParam('dd', '1.15');
-    const dp = new THREE.Vector3(x0 + Math.sin(yaw0) * dd, 0, z0 + Math.cos(yaw0) * dd);
+    const da = yaw0 + +urlParam('da', '0') * Math.PI / 180; // dummy bearing relative to the keeper's facing
+    const dp = new THREE.Vector3(x0 + Math.sin(da) * dd, 0, z0 + Math.cos(da) * dd);
     dp.y = game.world.groundAt(dp.x, dp.z);
-    const dyaw = yaw0 + Math.PI;
+    const dyaw = da + Math.PI;
     const height = adult ? 0.55 : 0.36;
     dummy = { root, body, pos: dp, yaw: dyaw, height };
     const head = () => dp.clone().add(new THREE.Vector3(Math.sin(dyaw) * height * 0.55, height * 0.95, Math.cos(dyaw) * height * 0.55));

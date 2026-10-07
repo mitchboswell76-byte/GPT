@@ -11,7 +11,7 @@
 // armTarget (world point for the stroking hand), lookTarget.
 import * as THREE from 'three';
 import { solveTwoBone, rotateBoneAxis } from '../util/ik.js';
-import { damp, clamp, smoothstep } from '../util/noise.js';
+import { damp, clamp, smoothstep, angleDiff } from '../util/noise.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _c = new THREE.Vector3();
@@ -49,7 +49,14 @@ export class KeeperPoses {
   /** Advance pose weights; called before the legs are placed. */
   advance(dt) {
     const p = this.m.player;
-    const goal = clamp(p.crouchTarget || 0, 0, 1);
+    let goal = clamp(p.crouchTarget || 0, 0, 1);
+    // face the animal first (stepping round on the spot), then get down
+    if (p.faceTarget && this.drop < 0.1) {
+      const want = Math.atan2(p.faceTarget.x - p.pos.x, p.faceTarget.z - p.pos.z);
+      const feet = this.m.feet;
+      const squared = ['L', 'R'].every((k) => !feet[k].swing && Math.abs(angleDiff(feet[k].yaw, p.yaw)) < 0.4);
+      if (Math.abs(angleDiff(p.yaw, want)) > 0.3 || !squared) goal = 0;
+    }
     const down = goal > this.drop;
     // staged: going down the trunk leads, coming up the pelvis leads
     this.bend = damp(this.bend, goal, down ? 4.2 : 2.2, dt);
@@ -59,6 +66,7 @@ export class KeeperPoses {
     this.offerW = damp(this.offerW, (p.offerTarget || 0) * (goal > 0 ? settled : 1), 4, dt);
     this.petW = damp(this.petW, (p.petTarget || 0) * (goal > 0 ? settled : 1), 5, dt);
     this.active = this.drop > 0.02 || goal > 0;
+    this.pending = (p.crouchTarget || 0) > 0 && goal === 0; // waiting to face the animal
     this.crouchAmount = this.drop; this.offerAmount = this.offerW; this.petAmount = this.petW;
     this.pelvisDy = 0;
     this.headTilt = 0.14 * Math.max(this.offerW, this.petW * 0.6);

@@ -10,6 +10,7 @@ import { CONFIG } from '../data/config.js';
 import { SPECIES } from '../data/species.js';
 import { MODELS } from '../data/assets.js';
 import { CreatureBody } from './CreatureBody.js';
+import { Posture } from './Posture.js';
 import { damp, dampAngle, angleDiff, clamp, lerp, smoothstep, mulberry32 } from '../util/noise.js';
 
 const POSES = ['sit', 'lie', 'sleep', 'eat', 'bow'];
@@ -37,6 +38,9 @@ export class Creature {
     this.blinkT = 2 + Math.random() * 3; this.blink = 0;
     this.breathPhase = 0;
     this.rnd = mulberry32(record.seed || 7);
+    // staged posture changes and one-shot actions (shake, stretch, scratch, yawn)
+    this.posture = new Posture({ rnd: this.rnd });
+    this.lifeT = 8 + this.rnd() * 10;
     this.bodies = [];
     this.collider = game.world.colliders.addCircle(this.pos.x, this.pos.z, 0.2, 'creature', record.uid);
     this.stuckT = 0;
@@ -85,7 +89,7 @@ export class Creature {
   steer(dt, x, z, maxSpeed, arrive = 0.3) {
     const dx = x - this.pos.x, dz = z - this.pos.z, d = Math.hypot(dx, dz);
     if (d < arrive) { this.brake(dt); return d; }
-    if (this.posing() > 0.15) { this.poseTarget = null; this.brake(dt); return d; }
+    if (this.posing() > 0.15 || this.posture.act || this.posture.queue.length) { this.poseTarget = null; this.brake(dt); return d; }
     const want = Math.atan2(dx, dz);
     const turn = angleDiff(this.yaw, want);
     const turnRate = lerp(3.4, 2.2, clamp(this.speed / 2.5, 0, 1));
@@ -143,8 +147,11 @@ export class Creature {
   update(dt) {
     if (dt <= 0) { this.render(0); return; }
     this.think(dt);
-    // pose smoothing
-    for (const p of POSES) this.pose[p] = damp(this.pose[p], this.poseTarget === p ? 1 : 0, this.poseTarget === p ? 2.6 : 4, dt);
+    // posture: staged transitions toward the requested pose, plus idle actions
+    this.posture.want(this.poseTarget);
+    this.idleLife(dt);
+    this.posture.update(dt);
+    Object.assign(this.pose, this.posture.weights);
     this.lookWeight = damp(this.lookWeight, this.look.target ? 1 : 0, 3, dt);
     // ground follow and slope tilt
     const w = this.game.world;
@@ -164,13 +171,25 @@ export class Creature {
     this.r.pos = { x: +this.pos.x.toFixed(2), z: +this.pos.z.toFixed(2), yaw: +this.yaw.toFixed(3) };
   }
 
+  /** Occasional scratches and yawns while resting. */
+  idleLife(dt) {
+    const P = this.posture;
+    if (this.speed > 0.05 || P.busy) return;
+    this.lifeT -= dt;
+    if (this.lifeT > 0) return;
+    this.lifeT = 12 + this.rnd() * 16;
+    const r = this.rnd();
+    if (P.cur === 'sit' && this.poseTarget === 'sit') { if (r < 0.3) P.play('scratch'); else if (r < 0.55) P.play('yawn'); }
+    else if (P.cur === 'lie' && this.poseTarget === 'lie' && r < 0.35) P.play('yawn');
+  }
+
   render(dt) {
     this.syncBodies();
     this.root.position.copy(this.pos);
     this.root.rotation.set(0, this.yaw, 0);
     const ctx = {
       dt, time: this.game.time, rootObj: this.root, position: this.pos, yaw: this.yaw, yawRate: this.yawRate,
-      velocity: this.vel, speed: this.speed, ground: (x, z) => this.game.world.groundAt(x, z), pose: this.pose,
+      velocity: this.vel, speed: this.speed, ground: (x, z) => this.game.world.groundAt(x, z), pose: this.pose, posture: this.posture,
       look: { target: this.look.target, weight: this.lookWeight }, tail: this.tail, pant: this.pant,
       blink: Math.max(this.blink, this.pose.sleep > 0.6 ? 1 : 0), breath: 0.5 + 0.5 * Math.sin(this.breathPhase),
       perk: this.excite, slopePitch: this.slope || 0,
@@ -580,7 +599,10 @@ export class Creature {
             else { S.setFill(it.data.uid, fill - rate * 0.15); s.thirst = Math.min(100, s.thirst + CONFIG.care.drinkHydration * rate); }
           }
           if (a.eat > 1.5) obs(isFood ? 'eating' : 'drinking');
-          if (a.eat > 6 || fill <= 0 || (isFood ? s.hunger > 98 : s.thirst > 98)) { a.done = true; this.poseTarget = null; this.look.target = null; }
+          if (a.eat > 6 || fill <= 0 || (isFood ? s.hunger > 98 : s.thirst > 98)) {
+            a.done = true; this.poseTarget = null; this.look.target = null;
+            if (!isFood && this.rnd() < 0.5) this.posture.play('shake');
+          }
         }
         break;
       }
@@ -609,7 +631,11 @@ export class Creature {
         this.look.target = null;
         s.energy = Math.min(100, s.energy + dt * 2.2);
         if (a.sleepT > 3) obs('resting');
-        if ((a.short && a.sleepT > 22) || s.energy > 96) { a.done = true; this.poseTarget = null; }
+        if ((a.short && a.sleepT > 22) || s.energy > 96) {
+          a.done = true; this.poseTarget = null;
+          // waking: stretch, sometimes a shake-off after
+          if (this.pose.sleep > 0.3 || this.pose.lie > 0.5) { this.posture.play('stretch'); if (this.rnd() < 0.4) this.posture.play('shake'); }
+        }
         break;
       }
       case 'play': this.runPlay(dt, a); break;

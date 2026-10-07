@@ -109,6 +109,17 @@ export class CameraRig {
     const pitch = this.pitch - 0.08 * crouch;
     const off = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(this.yaw) * Math.cos(pitch));
     let ePos = look.clone().addScaledVector(off, dist);
+    // observing: if the keeper stands in the line of sight, orbit round the
+    // animal away from him until the view is clear
+    if (obs && this.obsBlend > 0.3) {
+      const kp = p.pos.clone(); kp.y += 1.0;
+      const d = ePos.clone().sub(look); const L = d.length(); d.divideScalar(L);
+      const rel = kp.sub(look); const t = rel.dot(d);
+      if (t > 0.15 && t < L + 0.3) {
+        rel.addScaledVector(d, -t); rel.y = 0;
+        if (rel.length() < 0.55) this.yaw -= (Math.sign(rel.dot(right)) || 1) * 1.4 * rawDt;
+      }
+    }
     ePos = this.collide(look, ePos);
     const ground = this.game.world.groundAt(ePos.x, ePos.z) + 0.35;
     if (ePos.y < ground) ePos.y = ground;
