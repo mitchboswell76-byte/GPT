@@ -16,7 +16,8 @@ notes where it attaches.
   already shows locked "Samples" and "Genetics" sections.
 - **Day/night and weather.** The calendar exists; `Environment.js` would animate
   the sun, sky and fog, and behaviour would add sleep cycles.
-- **Keeper animation set and vocalisations** (see `ASSETS.md`).
+- **Keeper carrying and tool use**, and recorded dog whines, panting and lapping
+  (see `ASSETS.md`).
 
 ## Collection and breeding
 

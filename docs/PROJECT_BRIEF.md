@@ -66,9 +66,12 @@ src/
          Assets.js        GLTF/texture loading; SkeletonUtils clones
          Save.js          versioned JSON in localStorage + autosave
          Guidance.js      objective steps derived from game state
-         Audio.js         ambience bed, positional stream, synthesised effects
+         Audio.js         ambience bed, positional stream, footsteps/foley (recorded, synth fallback)
+         SoundBank.js     recorded samples: variants, jitter, HRTF positioning, looping voices
+         CreatureAudio.js dog vocals and chewing driven by creature state and events
          Events.js        tiny event bus
   data/  config.js        all tunables (rates, growth timing, camera, quality presets)
+         sounds.js        sound ids and playback settings; soundFiles.js is generated
          assets.js        model manifest (paths, rig ids, scale ranges)
          species.js       species definitions, research, Atlas placeholders
          buildables.js    construction catalogue
@@ -79,11 +82,18 @@ src/
          Water.js         stream ribbon; Outpost.js cabin/shed/supplies/bridge
          Environment.js   sky, sun, shadows, fog, IBL; Colliders.js 2D collision world
          WorldLayout.js   stream course, paths, bridge, points of interest
-  entities/ Player.js     movement synced to clip speed; look-at, crouch and arm IK
+  entities/ Player.js     keeper movement: camera-relative intent, rate-limited turning, gaits
+            KeeperClips.js pose tables from the Idle/Walking clips; careful walk and jog synthesised
+            KeeperMotion.js foot planner (planted heels, stepping turns), pelvis, leg IK, upper body
+            KeeperPoses.js  staged kneel, offering and stroking hands, idle glances
+            KeeperTest.js  ?keepertest= harness (gaits, turns, offer/stroke with a dummy dog)
+            HairShading.js runtime shading for the generated haircut
             CameraRig.js  close orbit camera, build camera, moment framing (picks a side
                           with a clear view), observe mode, collision with buildings/kennels/bushes
   creatures/ rigs.js      bone maps per quadruped rig
-             QuadrupedRig.js  procedural gait + IK + poses (see below)
+             QuadrupedRig.js  procedural gait + IK + postures (see below)
+             Gait.js / LegIK.js / Posture.js / Secondary.js  gait timing, limb solver,
+                              staged postures and actions, spring tails and ears
              CreatureBody.js  one model instance + idle clip + rig
              Creature.js      record + motion + behaviour brain
              CreatureSystem.js care simulation, growth, research, interactions
@@ -94,23 +104,36 @@ src/
   vendor/ez-tree/         vendored tree generator (MIT)
 ```
 
-### Procedural quadruped animation
+### Procedural animation (no clips were supplied)
 
-The supplied dog models contain **only idle clips**. `QuadrupedRig` generates
-locomotion and poses on top of the idle:
+**Dogs.** The models contain only idle clips. `QuadrupedRig` builds everything
+else each frame from the bind pose:
 
-- A gait phase drives each paw; walk uses a lateral sequence, faster speeds blend
-  the hind offsets into a diagonal trot. Stride length and frequency scale with
-  leg length (Froude number), so puppy and adult move at plausible cadences.
-- Paws are planted in world space and swung to a predicted landing point
-  (accounting for velocity and turning), so they don't slide.
-- Two-bone IK bends upper/lower leg; a third "hock" segment on hind legs is aimed
-  separately. The Labrador's paws are separate IK-control bones, placed
-  explicitly (`endIsChild: false`).
-- Pose weights (sit, lie, sleep, eat, bow) move the body and paw targets.
-- Head look-at, tail wag/height by mood, ear spring, breathing/blink morphs.
-- Every frame starts from the bind pose (no accumulation), then the idle clip,
-  then the procedural layers.
+- Gaits (`Gait.js`): lateral-sequence walk, diagonal trot with a short
+  suspension, and a rotary gallop with spine flexion and extension. Stride and
+  cadence scale with leg length, so the puppy takes quick short steps.
+- Paws are planted in world space and swung on arcs to landing points predicted
+  from velocity and turning, so they never slide; standing still, a leg only
+  steps when its paw is out of place (turning on the spot, squaring up).
+- Body heights come from the planted legs; pelvis and shoulders roll and pitch
+  with their own legs, the trunk leans into acceleration and turns, the head
+  leads turns, nods at the walk and stabilises at the trot.
+- Legs (`LegIK.js`) roll over the digits, flex the carpus and hock in swing
+  and never hyper-extend. The Labrador's paws are separate IK-control bones.
+- Postures (`Posture.js`) are staged, not blended: a dog sits rear first, lies
+  down front first, rises front first. One-shot actions: waking stretch,
+  shake-off, ear scratch, yawn. `Creature` asks for a posture with `want()`
+  and plays actions with `play()`.
+- Tail and ears are damped spring chains (`Secondary.js`); jaw for panting
+  and yawning; breathing and blinking morphs.
+
+**Keeper.** Only Idle and an in-place Walking clip exist. `KeeperClips` turns
+them into phase tables and synthesises a careful walk (calm pace) and a jog
+(Shift). `KeeperMotion` plants the feet in the world (heel then ball), steps
+to turn on the spot and to settle after stopping, keeps the pelvis over the
+feet on slopes, porch and bridge, and adds lean, banking, breathing and a
+head that leads turns. `KeeperPoses` stages a one-knee kneel (the keeper turns
+to face the animal first), the offering hand and the stroking hand.
 
 Add a new quadruped by adding a bone map to `rigs.js` and a manifest entry.
 
@@ -135,14 +158,16 @@ Run with the dev server up: `node tools/playtest/stage1_build.mjs <outDir> <prof
 save carries forward.
 
 `tools/playtest/shot.mjs` and `strip.mjs` capture single frames / frame strips (use
-`?rigtest=` for animation checks).
+`?rigtest=` for dog animation, `?keepertest=` for the keeper, and `cam=head,dx,dy,dz,ty`
+for close-ups of the keeper's head). `audio_check.mjs` checks that every recording
+decodes and that footsteps and vocals fire.
 
 ## Known limitations (this build)
 
-- No walk/run/sit clips exist for either dog, so all locomotion is procedural;
-  the keeper has Idle and Walking only (no run, crouch or hand animations — these
-  are IK overlays).
+- All motion is procedural (see above); it is convincing at gameplay distance but
+  a motion-captured or hand-keyed set would still look better close up.
 - Lighting is a fixed late afternoon; the calendar only drives age.
-- Audio is a CC/MIT ambience bed plus synthesised effects; no animal vocalisations.
+- Real recordings cover barks, yips, footsteps, paws and most foley; there are
+  no whine, panting, lapping or shake-off recordings yet (see `ASSETS.md`).
 - Performance was checked by triangle/draw-call counts only (headless software
   renderer); use the quality setting in the pause menu if needed.

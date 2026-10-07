@@ -41,9 +41,10 @@ Inspection findings and repairs (all in the build script; rig and UVs untouched)
    `addKeeperHair` in the build script.*
 3. `T-Pose` clip removed. Textures converted to WebP (1024 px).
 
-Missing for a fuller keeper: run, crouch/kneel, reach/offer, petting, carrying
-and tool-use clips. Crouch, offering and stroking are currently IK overlays on
-the idle clip (`Player.js`).
+No other clips exist. The careful walk and jog are synthesised from the
+Walking clip, and kneeling, offering and stroking are procedural
+(`KeeperClips.js`, `KeeperMotion.js`, `KeeperPoses.js`). Carrying and
+tool-use motions do not exist yet.
 
 ### Puppy — `dog-puppy.glb` → `dog_puppy.glb`
 
@@ -55,8 +56,9 @@ the idle clip (`Player.js`).
 | Morph targets | `breath`, `blink` (driven procedurally as well as by the clip) |
 | Clips | one `Animation` (8.7 s): **standing idle only** (head looks around, tail moves) |
 
-No walk, trot, sit, lie, eat or play clips. All locomotion and poses come from
-`QuadrupedRig`. In-game scale grows from 1.12 to 2.15 (`scaleRange`).
+No walk, trot, sit, lie, eat or play clips. All locomotion, postures and
+actions come from `QuadrupedRig` and `Posture`. In-game scale grows from 1.12
+to 2.15 (`scaleRange`).
 
 ### Adult Labrador — `labrador_dog.glb` → `dog_adult.glb`
 
