@@ -55,16 +55,21 @@ export class KeeperPoses {
       const want = Math.atan2(p.faceTarget.x - p.pos.x, p.faceTarget.z - p.pos.z);
       const feet = this.m.feet;
       const squared = ['L', 'R'].every((k) => !feet[k].swing && Math.abs(angleDiff(feet[k].yaw, p.yaw)) < 0.4);
-      if (Math.abs(angleDiff(p.yaw, want)) > 0.3 || !squared) goal = 0;
-    }
+      this.pendingT = (this.pendingT || 0) + dt;
+      // never wait forever: after a moment, kneel where he stands
+      if ((Math.abs(angleDiff(p.yaw, want)) > 0.3 || !squared) && this.pendingT < 2.5) goal = 0;
+    } else if (!p.crouchTarget) this.pendingT = 0;
+    if (p.crouchTarget > 0) this.restMul = p.crouchTarget > 0.6 ? 1 : 0.6;
     const down = goal > this.drop;
     // staged: going down the trunk leads, coming up the pelvis leads
     this.bend = damp(this.bend, goal, down ? 4.2 : 2.2, dt);
     this.drop = damp(this.drop, goal, down ? (this.bend > goal * 0.35 ? 2.8 : 0.9) : 3.2, dt);
     if (Math.abs(this.drop - goal) < 0.002) this.drop = goal;
-    const settled = smoothstep(0.55, 0.92, this.drop / Math.max(0.3, goal || 1));
-    this.offerW = damp(this.offerW, (p.offerTarget || 0) * (goal > 0 ? settled : 1), 4, dt);
-    this.petW = damp(this.petW, (p.petTarget || 0) * (goal > 0 ? settled : 1), 5, dt);
+    const settled = smoothstep(0.55, 0.92, this.drop / Math.max(0.3, p.crouchTarget || 1));
+    // the hand only goes out once the kneel is (nearly) done
+    const kneeling = (p.crouchTarget || 0) > 0;
+    this.offerW = damp(this.offerW, (p.offerTarget || 0) * (kneeling ? settled : 1), 4, dt);
+    this.petW = damp(this.petW, (p.petTarget || 0) * (kneeling ? settled : 1), 5, dt);
     this.active = this.drop > 0.02 || goal > 0;
     this.pending = (p.crouchTarget || 0) > 0 && goal === 0; // waiting to face the animal
     this.crouchAmount = this.drop; this.offerAmount = this.offerW; this.petAmount = this.petW;
@@ -134,7 +139,7 @@ export class KeeperPoses {
       B.Neck.updateWorldMatrix(false, true);
     }
     // left hand rests on the raised left knee
-    const rest = smoothstep(0.5, 0.95, this.drop) * (p.crouchTarget > 0.6 ? 1 : 0.6);
+    const rest = smoothstep(0.5, 0.95, this.drop) * (this.restMul ?? 1);
     if (rest > 0.01) {
       const kneeL = B.LeftLeg.getWorldPosition(new THREE.Vector3());
       const hand = B.LeftHand.getWorldPosition(new THREE.Vector3());

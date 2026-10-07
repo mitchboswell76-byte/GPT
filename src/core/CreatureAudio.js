@@ -66,6 +66,8 @@ export class CreatureAudio {
   update(dt) {
     const g = this.game;
     if (!g.creatures) return;
+    // paused: no chewing or idle vocals behind the menu (loops fade out)
+    if (g.paused || dt <= 0) { for (const c of g.creatures.list) for (const k of [':pant', ':lap']) this.bank.loop(c.r.uid + k, k === ':pant' ? 'dog_pant' : 'dog_lap', { volume: 0 }); return; }
     const p = g.player;
     const t = now();
     for (const c of g.creatures.list) {
@@ -82,10 +84,12 @@ export class CreatureAudio {
         this.bank.play('dog_eat', { pos, volume: this.isAdult(c) ? 1 : 0.75, rate: this.isAdult(c) ? 0.92 : 1.08 });
         s.nextChew = t + 0.42 + Math.random() * 0.35;
       }
+      // body actions (shake-off) come from the posture system
+      const pa = c.posture?.action || null;
+      if (pa !== s.lastPosAct) { if (pa === 'shake') this.bank.play('dog_shake', { pos }); s.lastPosAct = pa; }
       // one-shots on activity changes
       if (act !== s.lastAct) {
         if (act === 'sniff') this.bank.play('dog_sniff', { pos });
-        if (act === 'shake') this.bank.play('dog_shake', { pos });
         if (act === 'play' && Math.random() < 0.6) this.vocal(c, 'yip', 0.3);
         if (act === 'greet' && c.r.stats.trust > 50) this.vocal(c, Math.random() < 0.6 ? 'yip' : 'bark', 0.2);
         s.lastAct = act;

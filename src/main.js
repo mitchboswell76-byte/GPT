@@ -17,7 +17,7 @@ window.__THREE = THREE; // debugging and playtest probes
 
 if (urlParam('keepertest')) {
   // Debug: keeper motion harness (?keepertest=walk&speed=1.65&cy=90)
-  await game.loadWorld(() => {}); await game.assets.loadModels(['player', 'dog_puppy']);
+  await game.loadWorld(() => {}); await game.assets.loadModels(['player', 'dog_puppy', 'dog_adult']);
   (await import('./entities/KeeperTest.js')).startKeeperTest(game); game.start(); window.__ready = true;
 } else if (urlParam('rigtest')) {
   // Debug: procedural rig viewer (?rigtest=dog_puppy&speed=1&pose=lie)

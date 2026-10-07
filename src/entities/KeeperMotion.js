@@ -243,6 +243,8 @@ export class KeeperMotion {
       else if (f.swing) { // finish an idle step instantly where it is
         this.plantAt(f, this.heelFromAnkle(f, f.ankle, f.q, _v2), f.swing.yaw1 ?? f.yaw);
       }
+      // a trailing foot already past its lift point waits for the next cycle (no hop)
+      if (s !== lead) f.lifted = f.pf >= D;
     }
     this.mode = 'move';
     this.stopping = 0;
@@ -289,7 +291,11 @@ export class KeeperMotion {
         f.pf = fract(this.phase - f.off);
         const wrapped = f.pf < f.pfPrev - 0.5;
         if (f.planted) {
-          if (f.pf >= D && (f.pfPrev < D || wrapped)) {
+          if (wrapped) f.lifted = false;
+          // lift by state, not by crossing: the duty factor moves while gaits
+          // blend, and a missed crossing would pin the foot for a whole cycle
+          if (f.pf >= D && !f.lifted) {
+            f.lifted = true;
             const other = this.feet[s === 'L' ? 'R' : 'L'];
             if (!wantMove && p.speed < 0.5 && other.planted) { this.enterStand(); break; }
             this.beginGaitSwing(f, D);
@@ -361,6 +367,7 @@ export class KeeperMotion {
 
   land(f) {
     const p = this.player;
+    f.lifted = false;
     const heel = this.heelFromAnkle(f, f.ankle, f.q, _v2);
     this.plantAt(f, heel, this.bodyYaw);
     this.footstep(f, p.speed);
@@ -395,7 +402,8 @@ export class KeeperMotion {
       // turning: lead with the foot on the turn side
       const turnSide = Math.sign(this.yawRate) === f.sign && Math.abs(this.yawRate) > 0.4 ? 0.06 : 0;
       const err = dpos + dyaw * 0.35 + turnSide;
-      const thr = (!this.settleDone && this.settleT > 0.12) ? 0.09 : 0.2;
+      // squaring up to kneel by an animal: step until the feet are close to ideal
+      const thr = this.poses.pending ? 0.05 : (!this.settleDone && this.settleT > 0.12) ? 0.09 : 0.2;
       if (err > thr && err > bestErr) { best = s; bestErr = err; }
     }
     if (!best) {
@@ -470,8 +478,8 @@ export class KeeperMotion {
       hip.addScaledVector(right, shift);
       const dx = hip.x - f.ankle.x, dz = hip.z - f.ankle.z, hd2 = dx * dx + dz * dz;
       const Lmax = this.legLen * 0.995;
-      const reach = Lmax * Lmax > hd2 ? f.ankle.y + Math.sqrt(Lmax * Lmax - hd2) - hip.y : f.ankle.y - hip.y;
-      dyMax = Math.min(dyMax, reach);
+      // a foot out of reach (left behind mid-transition) must not drag the hips down
+      if (Lmax * Lmax > hd2) dyMax = Math.min(dyMax, f.ankle.y + Math.sqrt(Lmax * Lmax - hd2) - hip.y);
       if (f.weight > 0.5) {
         const L = Math.min(f.len, Lmax);
         const want = L * L > hd2 ? f.ankle.y + Math.sqrt(L * L - hd2) - hip.y : f.ankle.y - hip.y;
@@ -492,6 +500,7 @@ export class KeeperMotion {
       const a = w * w * (target - this.pelvisDy) - 2 * w * this.pelvisDyV;
       this.pelvisDyV += a * h; this.pelvisDy += this.pelvisDyV * h;
       if (this.pelvisDy > dyMax) { this.pelvisDy = dyMax; this.pelvisDyV = Math.min(0, this.pelvisDyV); }
+      if (this.pelvisDy < -0.75) { this.pelvisDy = -0.75; this.pelvisDyV = Math.max(0, this.pelvisDyV); }
     }
     const off = new THREE.Vector3(0, this.pelvisDy, 0).addScaledVector(right, shift);
     if (this.poses.pelvisOffset) off.add(this.poses.pelvisOffset);
@@ -593,9 +602,12 @@ export class KeeperMotion {
     if (p.moveIntent && Math.abs(turn) > 0.15) ty = clamp(ty * 0.3 + turn * 0.75, -1.0, 1.0);
     const look = this.look || (this.look = { yaw: 0, pitch: 0, vy: 0, vp: 0 });
     // quick start, soft settle (saccade-like head turn)
-    const k = 90, c = 2 * Math.sqrt(k) * 0.9;
-    look.vy += (k * (ty - look.yaw) - c * look.vy) * dt; look.yaw += look.vy * dt;
-    look.vp += (k * (tp - look.pitch) - c * look.vp) * dt; look.pitch += look.vp * dt;
+    // (substepped so very low frame rates cannot make it diverge)
+    const k = 90, c = 2 * Math.sqrt(k) * 0.9, n = Math.max(1, Math.ceil(dt * 120)), h = dt / n;
+    for (let i = 0; i < n; i++) {
+      look.vy += (k * (ty - look.yaw) - c * look.vy) * h; look.yaw += look.vy * h;
+      look.vp += (k * (tp - look.pitch) - c * look.vp) * h; look.pitch += look.vp * h;
+    }
     const right = _v3.set(Math.cos(this.bodyYaw), 0, -Math.sin(this.bodyYaw));
     rotateBoneAxis(B.Spine2, UP, look.yaw * 0.22);
     B.Spine2.updateWorldMatrix(false, true);

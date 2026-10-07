@@ -264,6 +264,8 @@ export class Creature {
         this.poseTarget = null;
         const rem = this.steer(dt, tx, tz, 1.0, 0.12);
         this.lookAtPlayer();
+        // give up after a while, but not while still busy getting up
+        if (this.posture.act || this.posture.busy) o.t = Math.min(o.t, 2);
         if (rem < 0.16 || (this.blocked && rem < 0.8) || o.t > 5) { o.arrived = true; o.arrivedAt = o.t; }
       } else {
         this.brake(dt);

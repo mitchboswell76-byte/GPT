@@ -203,6 +203,7 @@ export class CreatureSystem {
     p.crouchTarget = c.height < 0.35 ? 0.85 : 0.45; p.petTarget = 1; p.controlsEnabled = false;
     p.faceTarget = c.pos.clone();
     c.override = { type: 'come-to-hand', t: 0 };
+    c.posture.queue.length = 0; // a pending stretch or shake waits; the keeper comes first
     if (c.act && !['eat', 'drink'].includes(c.act.type)) c.act = null;
     c.excite = Math.min(1, c.excite + 0.5);
     const s = c.r.stats;

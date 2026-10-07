@@ -153,13 +153,14 @@ export class Posture {
 
   update(dt) {
     // posture transitions -------------------------------------------------
-    if (this.tr && this.tr.to !== this.target && this.target === this.cur && this.tr.t / this.tr.def.dur < 0.6) {
+    // the goal is the requested posture, unless a queued action needs another
+    const need = this.queue.length && this.queue[0].name ? ACTIONS[this.queue[0].name].need : null;
+    const goal = need && !this.act ? need : this.target;
+    if (this.tr && this.tr.to !== goal && goal === this.cur && this.tr.t / this.tr.def.dur < 0.6) {
       // changed our mind early: reverse back to where we came from, briskly
       const back = TRANSITIONS[`${this.tr.to}>${this.cur}`] || { dur: 0.7, ch: {} };
       this.tr = { from: { ...this.base }, to: this.cur, def: back, t: back.dur * 0.35, rate: 1.3 };
     }
-    const need = this.queue.length && this.queue[0].name ? ACTIONS[this.queue[0].name].need : null;
-    const goal = need && !this.act ? need : this.target;
     if (!this.tr && !this.act && goal !== this.cur) this.begin(this.nextHop(this.cur, goal));
     if (this.tr) {
       const tr = this.tr;
