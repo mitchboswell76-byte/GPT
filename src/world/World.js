@@ -5,6 +5,7 @@ import { Environment } from './Environment.js';
 import { Water } from './Water.js';
 import { Grass } from './Grass.js';
 import { Vegetation } from './Vegetation.js';
+import { whenTexturesLoaded } from '../vendor/ez-tree/textures.js';
 import { Outpost } from './Outpost.js';
 import { Colliders } from './Colliders.js';
 import { createMaterials } from './Materials.js';
@@ -39,6 +40,9 @@ export class World {
     this.vegetation = new Vegetation(this.terrain, this.colliders, quality, assets);
     this.vegetation.build();
     scene.add(this.vegetation.group);
+    progress?.(0.4, 'Filling in the distant woods');
+    await whenTexturesLoaded();
+    this.vegetation.buildFarTrees(this.game.renderer);
     progress?.(0.45, 'Raising the field station');
     await tick();
     this.outpost = new Outpost(this.terrain, this.colliders, this.mats);

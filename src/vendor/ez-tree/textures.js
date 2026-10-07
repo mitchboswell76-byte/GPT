@@ -6,10 +6,16 @@ import * as THREE from 'three';
 const BASE = 'assets/vendor/ez-tree/';
 const loader = new THREE.TextureLoader();
 const cache = new Map();
+const pending = [];
+
+/** Resolves once every texture requested so far has loaded. */
+export function whenTexturesLoaded() { return Promise.all(pending); }
 
 function load(file, srgb) {
   if (!cache.has(file)) {
-    const t = loader.load(BASE + file);
+    let done;
+    pending.push(new Promise((r) => { done = r; }));
+    const t = loader.load(BASE + file, () => done(), undefined, () => done());
     if (srgb) t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 4;
     cache.set(file, t);

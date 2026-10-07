@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "assets": "node tools/assets/build-assets.mjs && python3 tools/assets/gen_textures.py",
+    "playtest": "node tools/playtest/stage1_build.mjs playtest-out playtest-out/profile && node tools/playtest/stage2_puppy.mjs playtest-out playtest-out/profile && node tools/playtest/stage3_care.mjs playtest-out playtest-out/profile"
   },
   "dependencies": {
-    "@dgreenheck/ez-tree": "^1.1.0",
     "@fontsource/fraunces": "^5.3.0",
     "@fontsource/work-sans": "^5.3.0",
     "three": "^0.186.1"

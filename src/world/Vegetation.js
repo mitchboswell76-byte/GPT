@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Tree } from '../vendor/ez-tree/index.js';
-import { getBarkTexture, getLeafTexture } from '../vendor/ez-tree/textures.js';
+import { getBarkTexture, getLeafTexture, whenTexturesLoaded } from '../vendor/ez-tree/textures.js';
 import { mulberry32, fbm, smoothstep } from '../util/noise.js';
 import { forestDensity } from './Terrain.js';
 import { PATH_INDEX, BRIDGE, PUPPY_SPAWN, FALLEN_LOG, OUTPOST } from './WorldLayout.js';
@@ -39,7 +39,6 @@ export class Vegetation {
     for (const [id, list] of this.placements) this.instance(id, list);
     this.buildFerns();
     this.buildReeds();
-    this.buildFarTrees();
     this.buildLog();
   }
 
@@ -287,39 +286,68 @@ export class Vegetation {
     this.group.add(im);
   }
 
-  buildFarTrees() {
-    // Cheap rounded canopies on the surrounding hills; fog turns them into a
-    // soft tree line that frames the reserve.
-    const canopy = new THREE.IcosahedronGeometry(1, 1);
-    const p = canopy.attributes.position;
-    for (let i = 0; i < p.count; i++) {
-      const v = new THREE.Vector3().fromBufferAttribute(p, i);
-      const k = 1 + 0.32 * fbm(v.x * 2.6 + v.y, v.z * 2.6 - v.y, 3);
-      p.setXYZ(i, v.x * k, v.y * k * 1.15 + 0.25, v.z * k);
+  /**
+   * Distant tree line from impostors: each generated tree variant is rendered
+   * once into a transparent texture and drawn as crossed quads on the hills.
+   */
+  buildFarTrees(renderer) {
+    const ids = ['oakA', 'oakL', 'ash', 'birch', 'oakB'];
+    const S = 512;
+    const scene = new THREE.Scene();
+    scene.add(new THREE.HemisphereLight(0xe8eef0, 0x50502a, 1.2));
+    const sun = new THREE.DirectionalLight(0xffe6c4, 2.6); sun.position.set(-0.6, 0.5, 0.65); scene.add(sun);
+    const cards = [];
+    for (const id of ids) {
+      const P = this.protos.get(id);
+      const grp = new THREE.Group();
+      grp.add(new THREE.Mesh(P.branches, P.bark), new THREE.Mesh(P.leaves, P.leafMat));
+      scene.add(grp);
+      grp.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(grp);
+      const size = box.getSize(new THREE.Vector3());
+      const half = Math.max(size.y, size.x, size.z) / 2 * 1.04;
+      const cy = box.min.y + half;
+      const cam = new THREE.OrthographicCamera(-half, half, half, -half, 0.1, 200);
+      cam.position.set(0, cy, 60); cam.lookAt(0, cy, 0);
+      const rt = new THREE.WebGLRenderTarget(S, S, { samples: 4 });
+      rt.texture.colorSpace = THREE.SRGBColorSpace;
+      const prev = { t: renderer.getRenderTarget(), c: renderer.getClearColor(new THREE.Color()), a: renderer.getClearAlpha(), tm: renderer.toneMapping };
+      renderer.setRenderTarget(rt);
+      renderer.setClearColor(0x46542e, 0);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.clear();
+      renderer.render(scene, cam);
+      renderer.setRenderTarget(prev.t);
+      renderer.setClearColor(prev.c, prev.a);
+      renderer.toneMapping = prev.tm;
+      scene.remove(grp);
+      cards.push({ tex: rt.texture, size: half * 2, lift: cy - half - box.min.y });
     }
-    canopy.computeVertexNormals();
-    const trunk = new THREE.CylinderGeometry(0.08, 0.12, 1.4, 5).translate(0, -0.6, 0);
-    const geo = mergeGeometries([canopy.toNonIndexed(), trunk.toNonIndexed()]);
-    geo.scale(4, 5, 4); geo.translate(0, 5, 0);
-    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, envMapIntensity: 0.3 });
-    const r = this.rng; const pts = [];
-    for (let i = 0; i < 9000 && pts.length < 1400; i++) {
-      const a = r() * Math.PI * 2, d = 165 + Math.pow(r(), 0.7) * 520;
+    const r = this.rng;
+    const pts = [];
+    for (let i = 0; i < 12000 && pts.length < 1500; i++) {
+      const a = r() * Math.PI * 2, d = 150 + Math.pow(r(), 0.8) * 520;
       const x = Math.cos(a) * d, z = Math.sin(a) * d + 15;
-      const dens = 0.35 + 0.5 * smoothstep(-0.1, 0.4, fbm(x * 0.006, z * 0.006, 3));
+      const dens = 0.3 + 0.55 * smoothstep(-0.1, 0.4, fbm(x * 0.006, z * 0.006, 3)) + 0.3 * forestDensity(x, z);
       if (r() > dens) continue;
       pts.push([x, z]);
     }
-    const im = new THREE.InstancedMesh(geo, mat, pts.length);
-    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3();
-    const col = new THREE.Color();
-    pts.forEach(([x, z], i) => {
-      q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), r() * 6.28); const w = 0.6 + r() * 0.9; s.set(w, w * (0.9 + r() * 0.9), w * (0.8 + r() * 0.4));
-      im.setMatrixAt(i, m.compose(new THREE.Vector3(x, this.terrain.heightAt(x, z) - 0.5, z), q, s));
-      im.setColorAt(i, col.setHSL(0.2 + r() * 0.08, 0.25 + r() * 0.15, 0.13 + r() * 0.07));
+    const quad = new THREE.PlaneGeometry(1, 1); quad.translate(0, 0.5, 0);
+    const cross = mergeGeometries([quad.clone(), quad.clone().rotateY(Math.PI / 2)]);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+    cards.forEach((card, ci) => {
+      const mine = pts.filter((_, i) => i % cards.length === ci);
+      const mat = new THREE.MeshBasicMaterial({ map: card.tex, alphaTest: 0.45, side: THREE.DoubleSide, color: 0xd6dccb });
+      const im = new THREE.InstancedMesh(cross, mat, mine.length);
+      mine.forEach(([x, z], i) => {
+        const sc = card.size * (0.75 + r() * 0.5);
+        q.setFromAxisAngle(up, r() * Math.PI);
+        s.set(sc, sc, sc);
+        im.setMatrixAt(i, m.compose(new THREE.Vector3(x, this.terrain.heightAt(x, z) - 0.6 - card.lift * sc / card.size, z), q, s));
+      });
+      im.computeBoundingSphere();
+      this.group.add(im);
     });
-    im.receiveShadow = false;
-    this.group.add(im);
   }
 
   buildLog() {

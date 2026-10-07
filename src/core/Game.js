@@ -23,6 +23,8 @@ const GradeShader = {
       c.rgb += vec3(-0.01, 0.004, 0.012) * (1.0 - smoothstep(0.0, 0.35, l));
       vec2 d = vUv - 0.5; d.x *= 1.25;
       c.rgb *= 1.0 - uVignette * smoothstep(0.25, 0.85, length(d));
+      // ordered noise dither hides 8-bit banding in the sky gradient
+      c.rgb += (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) / 255.0;
       gl_FragColor = c;
     }`,
 };

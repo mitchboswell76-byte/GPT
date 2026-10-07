@@ -207,12 +207,30 @@ export class Creature {
     this.socialT = Math.max(0, this.socialT - dt);
 
     if (this.override) { this.runOverride(dt); return; }
+    if (this.state !== 'stray' && this.yieldToKeeper(dt)) return;
     switch (this.state) {
       case 'stray': this.thinkStray(dt); break;
       case 'follow': this.thinkFollow(dt); break;
       case 'wait': this.thinkWait(dt); break;
       case 'resident': this.thinkResident(dt); break;
     }
+  }
+
+  /** Step out of the keeper's way when they walk straight at the dog. */
+  yieldToKeeper(dt) {
+    const p = this.player;
+    if (p.speed < 0.3 || this.pose.sleep > 0.5 || this.offerSession) return false;
+    if (this.act && ['eat', 'drink'].includes(this.act.type) && this.act.arrived) return false;
+    const dx = this.pos.x - p.pos.x, dz = this.pos.z - p.pos.z, d = Math.hypot(dx, dz);
+    if (d > 1.2 + this.radius * 2 || d < 1e-3) return false;
+    const fwd = p.forward();
+    if ((dx * fwd.x + dz * fwd.z) / d < 0.45) return false;
+    const side = Math.sign(fwd.x * dz - fwd.z * dx) || 1;
+    const tx = this.pos.x - fwd.z * side * 1.1 + fwd.x * 0.3, tz = this.pos.z + fwd.x * side * 1.1 + fwd.z * 0.3;
+    this.poseTarget = null;
+    this.steer(dt, tx, tz, 1.5, 0.05);
+    this.lookAtPlayer();
+    return true;
   }
 
   /** Short scripted moments driven by the keeper (e.g. being stroked). */
