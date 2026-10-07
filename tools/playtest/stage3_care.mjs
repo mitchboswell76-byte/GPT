@@ -42,10 +42,11 @@ try {
   await log('after meal');
   await T.press('v'); await T.step(10);           // stop observing
   // stroke the dog
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 70; i++) {
     s = await T.st();
     const d = Math.hypot(s.dog.x - s.p.x, s.dog.z - s.p.z);
     if (s.prompt && s.prompt.startsWith('Stroke')) break;
+    if (s.dog.act === 'sleep') { await T.step(60); continue; } // let a napping dog wake first
     if (d > 1.6) await T.walkTo(s.dog.x + (s.p.x - s.dog.x) / d * 1.2, s.dog.z + (s.p.z - s.dog.z) / d * 1.2, { tol: 0.3, maxFrames: 90 });
     else await T.step(10);
   }
