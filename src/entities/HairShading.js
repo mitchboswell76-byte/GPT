@@ -17,7 +17,8 @@ const SCALP_RE = /^HairScalp/;
 
 function patchCards(mat) {
   mat.alphaToCoverage = true;
-  mat.envMapIntensity = 0.4;
+  // hair is a poor mirror: keep sky reflections from tinting strands blue
+  mat.envMapIntensity = 0.16;
   mat.onBeforeCompile = (shader) => {
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <alphatest_fragment>', /* glsl */`
@@ -28,7 +29,7 @@ function patchCards(mat) {
           vec2 tsz = vec2( textureSize( map, 0 ) );
           vec2 dx = dFdx( vMapUv * tsz ), dy = dFdy( vMapUv * tsz );
           float mip = max( 0.0, 0.5 * log2( max( dot( dx, dx ), dot( dy, dy ) ) ) );
-          diffuseColor.a *= 1.0 + mip * 0.28;
+          diffuseColor.a *= 1.0 + mip * 0.15;
         }
         #endif
         #include <alphatest_fragment>`)
@@ -47,7 +48,7 @@ function patchCards(mat) {
           float trt = pow( sqrt( max( 0.0, 1.0 - th * th ) ), 22.0 ) * smoothstep( -0.15, 0.45, dot( geometryNormal, L ) );
           // light passing through the hair toward the viewer (backlit rim)
           float fwd = pow( saturate( dot( -V, L ) ), 4.0 ) * ( 1.0 - saturate( dot( geometryNormal, V ) ) );
-          reflectedLight.directSpecular += directLight.color * material.diffuseColor * ( trt * 0.55 + fwd * 0.35 );
+          reflectedLight.directSpecular += directLight.color * material.diffuseColor * ( trt * 0.3 + fwd * 0.2 );
         }
         #undef RE_Direct
         #define RE_Direct RE_Direct_Hair`)

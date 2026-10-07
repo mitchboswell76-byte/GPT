@@ -23,16 +23,22 @@ Inspection findings and repairs (all in the build script; rig and UVs untouched)
 1. **Hair cards rendered as solid blocks.** Beard, moustache and eyelash textures
    carry alpha but the materials were exported OPAQUE. Set to alpha MASK (0.45).
    The Body texture's alpha is only used by the eyelash patch, so masking it is safe.
-2. **Broken scalp.** The Body mesh has the top of the skull missing (jagged hole
-   from forehead to crown). The earlier `RepairedScalp` patch was a dark cap with
-   a jagged hairline and a stray band at eye level. It is removed and replaced by
-   a generated **HairCap** mesh: rays cast from the skull centre against the
-   Body mesh give the real head shape; an ellipsoid (crown height fixed from
-   proportions, ~11.5 cm above eye level) fills the open top; residuals blend the
-   two. It is skinned 100 % to `mixamorig:Head`, textured with a generated
-   short-crop hair texture and fades into the skin at the hairline.
-   *If you have the original hair mesh, that would be preferable — swap it in
-   the build script.*
+2. **Broken scalp, replaced by a groomed haircut.** The Body mesh has the top
+   of the skull missing. The earlier `RepairedScalp` patch (dark cap, jagged
+   hairline) is removed. `tools/assets/hair/` now builds a short men's cut:
+   - **HairScalp**: the head shape is reconstructed from rays cast against the
+     Body mesh, closed over the crown, and textured with dark roots, combed
+     streaks and a soft, irregular hairline that blends into the skin.
+   - **HairCards**: ~2,400 narrow curved strip cards (≈11k triangles) laid
+     along a groomed flow field (crown whorl, top swept forward, short back
+     and sides, finer cards at the hairline and sideburns), textured from a
+     generated strand atlas (8 clump variants, colour + strand normal map).
+   - Both are skinned with the weights of the nearest Body vertex, so they
+     follow the head in every clip. `src/entities/HairShading.js` adds
+     alpha-to-coverage edges, strand-aligned highlights and reduced sky
+     reflection at runtime.
+   *An artist-made hair mesh would still be better; swap it in at
+   `addKeeperHair` in the build script.*
 3. `T-Pose` clip removed. Textures converted to WebP (1024 px).
 
 Missing for a fuller keeper: run, crouch/kneel, reach/offer, petting, carrying

@@ -28,7 +28,17 @@ if (urlParam('rigtest')) {
   await session.init();
   const cam = urlParam('cam');
   if (cam) {
+    // cam=x,y,z,tx,ty,tz in world space, or cam=head,dx,dy,dz,ty: offset from the
+    // keeper's head in his own frame (dz forward), looking at the head + ty
     const v = cam.split(',').map(Number);
-    game.cameraRig.update = () => { game.camera.position.set(v[0], v[1], v[2]); game.camera.lookAt(v[3], v[4], v[5]); game.focus = new THREE.Vector3(v[0], v[1], v[2]); };
+    const head = cam.startsWith('head');
+    game.cameraRig.update = () => {
+      if (head) {
+        const p = game.player, h = p.headPosition, s = Math.sin(p.yaw), c = Math.cos(p.yaw);
+        game.camera.position.set(h.x + v[1] * c + v[3] * s, h.y + v[2], h.z - v[1] * s + v[3] * c);
+        game.camera.lookAt(h.x, h.y + (v[4] || 0), h.z);
+      } else { game.camera.position.set(v[0], v[1], v[2]); game.camera.lookAt(v[3], v[4], v[5]); }
+      game.focus = game.camera.position.clone();
+    };
   }
 }

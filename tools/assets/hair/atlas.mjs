@@ -20,9 +20,9 @@ export const TILE_ROLES = {
 // Dark brown palette (sRGB), matched to the painted hair at the back of the
 // head (~47,33,22) and harmonised with the warmer beard (~62,36,19).
 const PALETTE = [
-  [50, 36, 26], [58, 42, 30], [64, 46, 32], [44, 32, 23], [72, 52, 36], [54, 39, 28],
+  [52, 37, 27], [60, 43, 31], [66, 47, 33], [45, 32, 24], [73, 52, 37], [56, 40, 29],
 ];
-const HIGHLIGHT = [96, 72, 52];
+const HIGHLIGHT = [98, 74, 54];
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = Math.imul(s ^ (s >>> 15), 2246822519) + 0x9e3779b9 >>> 0) / 4294967296); }
 const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };

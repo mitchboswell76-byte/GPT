@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { CONFIG } from '../data/config.js';
 import { damp, dampAngle, angleDiff, clamp, smoothstep } from '../util/noise.js';
 import { solveTwoBone, rotateBoneAxis, translateBoneWorld, setBoneWorldQuaternion } from '../util/ik.js';
+import { applyHairShading } from './HairShading.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const WALK_CLIP_SPEED = CONFIG.player.walkSpeed;
@@ -20,9 +21,11 @@ export class Player {
     this.model.traverse((o) => {
       if (o.isMesh) {
         o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
-        if (o.material?.name === 'HairCap') { o.renderOrder = 1; }
+        // the blended scalp edge must draw after the opaque head
+        if (o.material?.name === 'HairScalp') { o.renderOrder = 1; }
       }
     });
+    applyHairShading(this.model);
 
     this.mixer = new THREE.AnimationMixer(this.model);
     const clip = (n) => inst.animations.find((a) => a.name === n);
