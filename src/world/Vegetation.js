@@ -48,6 +48,15 @@ export class Vegetation {
     t.loadPreset(v.preset);
     t.options.seed = v.seed;
     if (v.bark) t.options.bark.type = v.bark;
+    // Trim tessellation: radial segments and length sections per branch level.
+    const bush = v.id.startsWith('bush');
+    const segs = bush ? [4, 3, 3, 3] : [7, 4, 3, 3];
+    const secs = bush ? [3, 3, 2, 1] : [7, 4, 3, 2];
+    for (let l = 0; l < 4; l++) {
+      if (t.options.branch.segments[l] !== undefined) t.options.branch.segments[l] = Math.min(t.options.branch.segments[l], segs[l]);
+      if (t.options.branch.sections[l] !== undefined) t.options.branch.sections[l] = Math.min(t.options.branch.sections[l], secs[l]);
+    }
+    if (bush) t.options.leaves.count = Math.min(t.options.leaves.count, 10);
     t.generate();
     const bg = t.branchesMesh.geometry, lg = t.leavesMesh.geometry;
     bg.computeBoundingBox();
@@ -172,22 +181,32 @@ export class Vegetation {
   }
 
   instance(id, list) {
+    // One InstancedMesh per variant per 48 m tile, so the camera and the sun's
+    // shadow pass can cull whole tiles.
     const P = this.protos.get(id);
+    const tiles = new Map();
+    for (const p of list) {
+      const k = Math.floor(p.x / 48) + ',' + Math.floor(p.z / 48);
+      if (!tiles.has(k)) tiles.set(k, []);
+      tiles.get(k).push(p);
+    }
     const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), pos = new THREE.Vector3();
     const up = new THREE.Vector3(0, 1, 0);
-    const mk = (geo, mat, shadow) => {
-      const im = new THREE.InstancedMesh(geo, mat, list.length);
-      list.forEach((p, i) => {
-        q.setFromAxisAngle(up, p.yaw); s.setScalar(p.scale); pos.set(p.x, p.y, p.z);
-        im.setMatrixAt(i, m.compose(pos, q, s));
-      });
-      im.castShadow = shadow; im.receiveShadow = true;
-      im.computeBoundingSphere();
-      this.group.add(im);
-      return im;
-    };
-    mk(P.branches, P.bark, true);
-    mk(P.leaves, P.leafMat, true);
+    for (const items of tiles.values()) {
+      const mk = (geo, mat, shadow) => {
+        const im = new THREE.InstancedMesh(geo, mat, items.length);
+        items.forEach((p, i) => {
+          q.setFromAxisAngle(up, p.yaw); s.setScalar(p.scale); pos.set(p.x, p.y, p.z);
+          im.setMatrixAt(i, m.compose(pos, q, s));
+        });
+        im.castShadow = shadow; im.receiveShadow = true;
+        im.computeBoundingSphere();
+        this.group.add(im);
+        return im;
+      };
+      mk(P.branches, P.bark, !P.isBush);
+      mk(P.leaves, P.leafMat, true);
+    }
   }
 
   buildFerns() {

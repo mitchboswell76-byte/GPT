@@ -20,6 +20,7 @@ try {
   s = await log('at trough');
   await T.press('e'); await T.step(10);           // top up water
   await T.shot(`${OUT}/20_filled.png`);
+  await T.press('v'); await T.step(30);           // observe the dog
   // let the dog eat and drink while we watch
   let shots = { eat: 0, drink: 0, sleep: 0, play: 0 };
   for (let i = 0; i < 120; i++) {
@@ -33,6 +34,7 @@ try {
     if (shots.eat && shots.drink) break;
   }
   await log('after meal');
+  await T.press('v'); await T.step(10);           // stop observing
   // stroke the dog
   for (let i = 0; i < 40; i++) {
     s = await T.st();
@@ -41,8 +43,10 @@ try {
     if (d > 1.6) await T.walkTo(s.dog.x + (s.p.x - s.dog.x) / d * 1.2, s.dog.z + (s.p.z - s.dog.z) / d * 1.2, { tol: 0.3, maxFrames: 90 });
     else await T.step(10);
   }
-  await T.press('e'); await T.step(25);
+  await T.press('e'); await T.step(45);
   await T.shot(`${OUT}/22_stroke.png`);
+  await T.step(40);
+  await T.shot(`${OUT}/22b_stroke.png`);
   await T.step(60);
   await log('after stroke');
   // Life Atlas
@@ -55,6 +59,7 @@ try {
   await T.shot(`${OUT}/25_atlas_research.png`);
   await T.press('l'); await T.step(5);
   // observe routines for a while (one in-game day)
+  await T.press('v'); await T.step(20);
   for (let i = 0; i < 160; i++) {
     await T.step(15);
     s = await T.st();
@@ -94,7 +99,7 @@ try {
   await T.step(30);
   const s2 = await log('after reload');
   await T.shot(`${OUT}/30_reloaded.png`);
-  console.log('PERSIST', JSON.stringify({ same: Math.abs(s2.dog.growth - s.dog.growth) < 0.01 && s2.dog.state === 'resident' && s2.encs.length === s.encs.length, encs: s2.encs, objective: s2.objective }));
+  console.log('PERSIST', JSON.stringify({ ok: s2.dog.growth >= s.dog.growth - 0.001 && s2.dog.name === s.dog.name && s2.dog.state === 'resident' && s2.encs.length === s.encs.length && s2.encs[0]?.suitable && s2.step === s.step, before: { g: s.dog.growth, name: s.dog.name, step: s.step }, after: { g: s2.dog.growth, name: s2.dog.name, step: s2.step }, encs: s2.encs, objective: s2.objective }));
 } finally {
   console.log('logs', T.logs.slice(0, 20));
   await T.close();

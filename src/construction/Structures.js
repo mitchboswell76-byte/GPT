@@ -51,6 +51,7 @@ export class Structures {
       it.ball = { x: data.x, z: data.z, vx: 0, vz: 0, spin: new THREE.Quaternion() };
       this.balls.push(it);
     }
+    if (def.id === 'kennel') this.game.cameraRig?.occluders.push(obj);
     if (!silent) this.changed({ added: data.uid });
     return it;
   }
@@ -93,6 +94,7 @@ export class Structures {
     const it = this.items.get(uid); if (!it) return null;
     for (const c of it.colliders) this.game.world.colliders.remove(c);
     this.group.remove(it.obj);
+    const occ = this.game.cameraRig?.occluders; if (occ) { const i = occ.indexOf(it.obj); if (i >= 0) occ.splice(i, 1); }
     this.items.delete(uid);
     this.balls = this.balls.filter((b) => b !== it);
     this.changed({ removed: uid });

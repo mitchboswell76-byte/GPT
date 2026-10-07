@@ -221,7 +221,8 @@ export class Creature {
     o.t += dt;
     if (o.type === 'come-to-hand') {
       const fwd = p.forward();
-      const tx = p.pos.x + fwd.x * (0.45 + this.height * 1.3), tz = p.pos.z + fwd.z * (0.45 + this.height * 1.3);
+      const reach = 0.3 + this.height * 1.15;
+      const tx = p.pos.x + fwd.x * reach, tz = p.pos.z + fwd.z * reach;
       if (!o.arrived) {
         this.poseTarget = null;
         const rem = this.steer(dt, tx, tz, 1.0, 0.12);
@@ -569,10 +570,10 @@ export class Creature {
         if (!S.items.has(it.data.uid)) { a.done = true; break; }
         if (!a.arrived) {
           if (a.stage !== 'in') {
-            const rem = this.approachItem(dt, it, { x: 0, z: 1.1 + this.height }, 0.8);
+            const rem = this.approachItem(dt, it, { x: 0, z: 1.25 + this.height }, 0.8);
             if (rem < 0.25 || (this.blocked && a.t > 4)) a.stage = 'in';
           } else {
-            const rem = this.approachItem(dt, it, { x: 0, z: -0.12 }, 0.45);
+            const rem = this.approachItem(dt, it, { x: 0, z: -0.05 - this.height * 0.3 }, 0.45);
             if (rem < 0.2 || this.blocked) { a.arrived = true; a.sleepT = 0; }
           }
           if (a.t > 25) a.done = true;
@@ -580,10 +581,12 @@ export class Creature {
         }
         this.brake(dt);
         // turn round to face the doorway, then settle
-        const door = S.toWorld(it.data, 0, 2);
-        this.turnToward(dt, door.x, door.z, 1.6);
+        const door = S.toWorld(it.data, 0, 2.5);
+        const err = this.turnToward(dt, door.x, door.z, 1.8);
+        if (!a.faced && (err < 0.2 || a.sleepT > 6)) { a.faced = true; a.settleT = 0; }
         a.sleepT += dt;
-        this.poseTarget = a.sleepT > 1.5 ? (a.sleepT > 4 ? 'sleep' : 'lie') : null;
+        if (a.faced) a.settleT += dt;
+        this.poseTarget = a.faced ? (a.settleT > 2.5 ? 'sleep' : 'lie') : null;
         this.look.target = null;
         s.energy = Math.min(100, s.energy + dt * 2.2);
         if (a.sleepT > 3) obs('resting');

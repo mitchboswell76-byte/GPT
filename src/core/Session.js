@@ -78,6 +78,7 @@ export class Session {
     g.player.setPosition(s.player.x, s.player.z, s.player.yaw);
     g.player.calm = !!s.player.calm;
     g.structures.load(s.build);
+    for (const it of g.structures.items.values()) if (it.def.id === 'kennel' && !g.cameraRig.occluders.includes(it.obj)) g.cameraRig.occluders.push(it.obj);
     g.creatures.growthSpeed = +(urlParam('growth') || s.settings.growthSpeed || 1);
     g.creatures.load(s.creatures);
     if (s.settings.volume !== undefined) g.audio.setVolume(s.settings.volume);

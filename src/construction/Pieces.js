@@ -65,7 +65,7 @@ export function buildGate(mats) {
 }
 
 export function buildKennel(mats) {
-  const W = 1.3, D = 1.0, H = 0.78, P = 0.12;
+  const W = 1.6, D = 1.3, H = 0.92, P = 0.12;
   const parts = { planks: [], planksDark: [], slate: [], straw: [] };
   parts.planksDark.push(place(boxGeo(W + 0.06, P, D + 0.06, 0.8), 0, P / 2, 0));
   for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) parts.planksDark.push(place(boxGeo(0.08, 0.1, 0.08), x * (W / 2 - 0.05), 0.05, z * (D / 2 - 0.05)));
@@ -73,12 +73,12 @@ export function buildKennel(mats) {
   parts.planks.push(place(boxGeo(W, H, 0.05, 0.9), 0, P + H / 2, -D / 2 + 0.025));
   for (const sx of [-1, 1]) parts.planks.push(place(boxGeo(0.05, H, D, 0.9), sx * (W / 2 - 0.025), P + H / 2, 0));
   // front with a doorway (0.56 wide, 0.62 high)
-  const dw = 0.56, dh = 0.62;
+  const dw = 0.66, dh = 0.74;
   const side = (W - dw) / 2;
   for (const sx of [-1, 1]) parts.planks.push(place(boxGeo(side, H, 0.05, 0.9), sx * (dw / 2 + side / 2), P + H / 2, D / 2 - 0.025));
   parts.planks.push(place(boxGeo(dw, H - dh, 0.05, 0.9), 0, P + dh + (H - dh) / 2, D / 2 - 0.025));
   // gables
-  const rise = 0.42;
+  const rise = 0.5;
   for (const sz of [-1, 1]) {
     const s = new THREE.Shape(); s.moveTo(-W / 2, 0); s.lineTo(W / 2, 0); s.lineTo(0, rise); s.lineTo(-W / 2, 0);
     const g = new THREE.ExtrudeGeometry(s, { depth: 0.05, bevelEnabled: false }); g.translate(0, 0, -0.025);
@@ -92,7 +92,7 @@ export function buildKennel(mats) {
   parts.planksDark.push(place(boxGeo(dw + 0.1, 0.06, 0.07), 0, P + dh + 0.03, D / 2));
   for (const sx of [-1, 1]) parts.planksDark.push(place(boxGeo(0.06, dh, 0.07), sx * (dw / 2 + 0.03), P + dh / 2, D / 2));
   // straw bed
-  const straw = new THREE.SphereGeometry(0.5, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1.1, 0.16, 0.8);
+  const straw = new THREE.SphereGeometry(0.5, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1.4, 0.16, 1.1);
   parts.straw.push(place(straw, 0, P, -0.05));
   const g = meshesFrom(parts, mats);
   g.userData.inside = new THREE.Vector3(0, P + 0.02, -0.08);

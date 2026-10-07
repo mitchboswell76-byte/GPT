@@ -19,7 +19,7 @@ export const BUILDABLES = {
     provides: ['gate'], desc: 'A hung timber gate. Place it on a fence bay; open and close it with E.',
   },
   kennel: {
-    id: 'kennel', name: 'Timber kennel', category: 'shelter', kind: 'object', cost: 30, hx: 0.7, hz: 0.6,
+    id: 'kennel', name: 'Timber kennel', category: 'shelter', kind: 'object', cost: 30, hx: 0.85, hz: 0.75,
     provides: ['shelter'], desc: 'Raised floor, slate-style roof and a deep straw bed. Keeps a dog dry and warm.',
   },
   food_bowl: {
