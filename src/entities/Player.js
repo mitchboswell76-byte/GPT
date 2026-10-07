@@ -1,13 +1,13 @@
-// The keeper: movement synced to the Walking clip's ground speed, collision,
-// and procedural layers (look-at, crouch with planted feet, offering hand).
+// The keeper: camera-relative movement with collision, turning that a body
+// can actually do (rate-limited, turn in place before setting off), and
+// KeeperMotion for everything visible (gaits, foot planting, poses).
 import * as THREE from 'three';
 import { CONFIG } from '../data/config.js';
-import { damp, dampAngle, angleDiff, clamp, smoothstep } from '../util/noise.js';
-import { solveTwoBone, rotateBoneAxis, translateBoneWorld, setBoneWorldQuaternion } from '../util/ik.js';
+import { damp, angleDiff, clamp, smoothstep, lerp } from '../util/noise.js';
+import { KeeperMotion, GAIT_SPEED } from './KeeperMotion.js';
 import { applyHairShading } from './HairShading.js';
 
-const UP = new THREE.Vector3(0, 1, 0);
-const WALK_CLIP_SPEED = CONFIG.player.walkSpeed;
+const SPEEDS = [CONFIG.player.calmSpeed ?? GAIT_SPEED.calm, CONFIG.player.walkSpeed ?? GAIT_SPEED.walk, GAIT_SPEED.jog];
 
 export class Player {
   constructor(game) {
@@ -26,89 +26,108 @@ export class Player {
       }
     });
     applyHairShading(this.model);
-
-    this.mixer = new THREE.AnimationMixer(this.model);
     const clip = (n) => inst.animations.find((a) => a.name === n);
-    this.idle = this.mixer.clipAction(clip(inst.def.clips.idle));
-    this.walk = this.mixer.clipAction(clip(inst.def.clips.walk));
-    this.idle.play(); this.walk.play();
-    this.walk.setEffectiveWeight(0);
 
-    const B = {};
-    this.model.traverse((o) => { if (o.isBone) B[o.name.replace('mixamorig', '')] = o; });
-    this.bones = B;
-
-    this.pos = new THREE.Vector3(...[CONFIG.start.playerPos[0], 0, CONFIG.start.playerPos[1]]);
+    this.pos = new THREE.Vector3(CONFIG.start.playerPos[0], 0, CONFIG.start.playerPos[1]);
     this.yaw = CONFIG.start.playerYaw;
+    this.desiredYaw = this.yaw;
+    this.yawVel = 0;
     this.vel = new THREE.Vector3();
     this.speed = 0;
+    this.targetSpeed = 0;
     this.moveIntent = 0;
+    this.gaitTarget = 1;
     this.calm = false;
     this.crouch = 0; this.crouchTarget = 0;
     this.offer = 0; this.offerTarget = 0;
     this.pet = 0; this.petTarget = 0;
+    this.armTarget = null;
     this.lookTarget = null;
-    this.look = { yaw: 0, pitch: 0 };
+    this.faceTarget = null;
     this.groundY = 0;
-    this.walkPhasePrev = 0;
     this.trail = [];
     this.controlsEnabled = true;
-    this.ikState = { L: {}, R: {}, arm: {} };
+    this.script = null; // debug harness: (player, dt) => { dx, dz, jog }
+
+    this.motion = new KeeperMotion(this, { idle: clip(inst.def.clips.idle), walk: clip(inst.def.clips.walk) });
+    this.bones = this.motion.B;
   }
 
   setPosition(x, z, yaw = this.yaw) {
     this.pos.set(x, this.game.world.groundAt(x, z), z);
     this.groundY = this.pos.y;
-    this.yaw = yaw;
+    this.yaw = this.desiredYaw = yaw;
+    this.yawVel = 0; this.speed = 0; this.vel.set(0, 0, 0);
     this.trail.length = 0;
+    this.motion.snap();
   }
 
-  update(dt) {
+  /** World-space movement intent from the keyboard (camera-relative). */
+  readIntent(active) {
     const input = this.game.input;
-    const cam = this.game.cameraRig;
     let ix = 0, iz = 0;
-    const active = this.controlsEnabled && !this.game.ui?.blocksMovement() && this.game.mode === 'explore';
     if (active) {
       if (input.anyDown('KeyW', 'ArrowUp')) iz += 1;
       if (input.anyDown('KeyS', 'ArrowDown')) iz -= 1;
       if (input.anyDown('KeyA', 'ArrowLeft')) ix -= 1;
       if (input.anyDown('KeyD', 'ArrowRight')) ix += 1;
-      if (input.wasPressed('KeyC')) this.calm = !this.calm;
     }
     const len = Math.hypot(ix, iz);
-    const jog = active && input.anyDown('ShiftLeft', 'ShiftRight');
+    if (!len) return { dx: 0, dz: 0, jog: false };
+    ix /= len; iz /= len;
+    const cy = this.game.cameraRig.yaw;
+    // camera-relative direction: forward is away from the camera
+    const fx = -Math.sin(cy), fz = -Math.cos(cy);
+    const rx = Math.cos(cy), rz = -Math.sin(cy);
+    return { dx: fx * iz + rx * ix, dz: fz * iz + rz * ix, jog: input.anyDown('ShiftLeft', 'ShiftRight') };
+  }
+
+  update(dt) {
+    const input = this.game.input;
+    const active = this.controlsEnabled && !this.game.ui?.blocksMovement() && this.game.mode === 'explore';
+    if (active && input.wasPressed('KeyC')) this.calm = !this.calm;
+    const intent = this.script ? this.script(this, dt) : this.readIntent(active);
+    const len = Math.hypot(intent.dx, intent.dz);
+    this.moveIntent = len > 0 ? 1 : 0;
+    this.gaitTarget = this.calm ? 0 : intent.jog ? 2 : 1;
+
+    // --- heading -------------------------------------------------------------
+    let face = null;
+    if (len > 0) face = Math.atan2(intent.dx, intent.dz);
+    else if (!this.controlsEnabled && this.faceTarget) face = Math.atan2(this.faceTarget.x - this.pos.x, this.faceTarget.z - this.pos.z);
+    if (face !== null) this.desiredYaw = face;
+    const turn = angleDiff(this.yaw, this.desiredYaw);
+    // a body turns at a limited rate: quick pivots in place, gentler arcs at speed
+    const maxRate = this.speed < 0.4 ? 4.4 : lerp(4.0, 2.7, clamp((this.speed - 0.4) / 2, 0, 1));
+    const wantRate = face !== null ? clamp(turn * (len > 0 ? 8 : 5), -maxRate, maxRate) : 0;
+    this.yawVel = damp(this.yawVel, wantRate, 16, dt);
+    if (Math.abs(this.yawVel * dt) > Math.abs(turn) && Math.sign(this.yawVel) === Math.sign(turn)) this.yawVel = turn / Math.max(dt, 1e-4);
+    this.yaw += this.yawVel * dt;
+
+    // --- speed ----------------------------------------------------------------
     let targetSpeed = 0;
     if (len > 0) {
-      ix /= len; iz /= len;
-      targetSpeed = this.calm ? CONFIG.player.calmSpeed : jog ? WALK_CLIP_SPEED * CONFIG.player.jogScale : WALK_CLIP_SPEED;
-      if (this.crouch > 0.3) targetSpeed = Math.min(targetSpeed, 0.6);
-      const cy = cam.yaw;
-      // camera-relative direction: forward is away from the camera
-      const fx = -Math.sin(cy), fz = -Math.cos(cy);
-      const rx = Math.cos(cy), rz = -Math.sin(cy);
-      const dx = fx * iz + rx * ix, dz = fz * iz + rz * ix;
-      const desiredYaw = Math.atan2(dx, dz);
-      const turn = angleDiff(this.yaw, desiredYaw);
-      this.yaw = dampAngle(this.yaw, desiredYaw, CONFIG.player.turnRate * (this.speed < 0.3 ? 1.4 : 1), dt);
-      // slow down while turning sharply so feet don't skate
-      targetSpeed *= 1 - 0.55 * smoothstep(0.6, 2.4, Math.abs(turn));
+      targetSpeed = SPEEDS[this.gaitTarget];
+      const a = Math.abs(turn);
+      // from a standstill, face the way first (turning in place), then set off
+      if (this.speed < 0.45 && a > 1.25) targetSpeed = 0;
+      else targetSpeed *= 1 - 0.62 * smoothstep(0.45, 1.7, a);
     }
-    if (!this.controlsEnabled && this.faceTarget) {
-      const want = Math.atan2(this.faceTarget.x - this.pos.x, this.faceTarget.z - this.pos.z);
-      this.yaw = dampAngle(this.yaw, want, 5, dt);
-    }
-    this.speed = damp(this.speed, targetSpeed, targetSpeed > this.speed ? 5.5 : 8, dt);
-    if (this.speed < 0.01) this.speed = 0;
-    this.moveIntent = len > 0 ? 1 : 0;
+    if (this.motion.poses.active) targetSpeed = 0;
+    this.targetSpeed = len > 0 ? Math.max(targetSpeed, 0.001) : 0;
+    const accel = targetSpeed > this.speed ? (this.speed < 0.3 ? 3.6 : 4.4) : 6.5;
+    this.speed = damp(this.speed, targetSpeed, accel, dt);
+    if (this.speed < 0.01 && targetSpeed === 0) this.speed = 0;
 
     const step = this.speed * dt;
     const nx = this.pos.x + Math.sin(this.yaw) * step, nz = this.pos.z + Math.cos(this.yaw) * step;
     const p = this.game.world.moveCircle(this.pos.x, this.pos.z, nx, nz, CONFIG.player.radius, (it) => it.tag !== 'gate-open');
     const moved = Math.hypot(p.x - this.pos.x, p.z - this.pos.z);
     if (dt > 0 && moved < step * 0.35 && step > 0) this.speed *= 0.6; // walking into something
+    if (dt > 0) this.vel.set((p.x - this.pos.x) / dt, 0, (p.z - this.pos.z) / dt);
     this.pos.x = p.x; this.pos.z = p.z;
     const gy = this.game.world.groundAt(this.pos.x, this.pos.z);
-    this.groundY = damp(this.groundY, gy, 18, dt);
+    this.groundY = damp(this.groundY, gy, 14, dt);
     this.pos.y = this.groundY;
 
     // breadcrumb trail for followers
@@ -117,105 +136,15 @@ export class Player {
       this.trail.push({ x: this.pos.x, z: this.pos.z });
       if (this.trail.length > 120) this.trail.shift();
     }
-
-    this.root.position.copy(this.pos);
-    this.root.rotation.y = this.yaw;
     this.animate(dt);
   }
 
   animate(dt) {
-    // Blend idle/walk; walk playback rate tracks ground speed (no sliding).
-    const w = smoothstep(0.04, 0.55, this.speed);
-    this.walk.setEffectiveWeight(w);
-    this.idle.setEffectiveWeight(1 - w);
-    this.walk.timeScale = Math.max(0.35, this.speed / WALK_CLIP_SPEED);
-    this.mixer.update(dt);
-
-    // footstep events at the clip's heel strikes
-    const ph = (this.walk.time / this.walk.getClip().duration) % 1;
-    if (w > 0.4) for (const strike of [0.32, 0.81]) {
-      if ((this.walkPhasePrev < strike && ph >= strike) || (this.walkPhasePrev > ph && (strike > this.walkPhasePrev || strike <= ph))) {
-        this.game.events.emit('footstep', { who: 'player', x: this.pos.x, z: this.pos.z, speed: this.speed });
-      }
-    }
-    this.walkPhasePrev = ph;
-
-    this.crouch = damp(this.crouch, this.crouchTarget, 4, dt);
-    this.offer = damp(this.offer, this.offerTarget, 5, dt);
-    this.pet = damp(this.pet, this.petTarget, 5, dt);
-    this.model.updateMatrixWorld(true);
-    this.applyLook(dt);
-    if (this.crouch > 0.01) this.applyCrouch();
-    if (this.offer > 0.01 || this.pet > 0.01) this.applyArm();
-  }
-
-  applyLook(dt) {
-    let ty = 0, tp = 0;
-    if (this.lookTarget) {
-      const head = this.bones.Head.getWorldPosition(new THREE.Vector3());
-      const d = this.lookTarget.clone().sub(head);
-      const yawTo = Math.atan2(d.x, d.z);
-      ty = clamp(angleDiff(this.yaw, yawTo), -1.1, 1.1);
-      if (Math.abs(angleDiff(this.yaw, yawTo)) > 2.0) ty = 0;
-      tp = clamp(Math.atan2(-d.y, Math.hypot(d.x, d.z)), -0.5, 0.75);
-    }
-    this.look.yaw = damp(this.look.yaw, ty, 4, dt);
-    this.look.pitch = damp(this.look.pitch, tp, 4, dt);
-    const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
-    const B = this.bones;
-    rotateBoneAxis(B.Spine2, UP, this.look.yaw * 0.25);
-    B.Spine2.updateWorldMatrix(false, true);
-    rotateBoneAxis(B.Neck, UP, this.look.yaw * 0.35);
-    rotateBoneAxis(B.Neck, right, this.look.pitch * 0.4);
-    B.Neck.updateWorldMatrix(false, true);
-    rotateBoneAxis(B.Head, UP, this.look.yaw * 0.4);
-    rotateBoneAxis(B.Head, right, this.look.pitch * 0.6);
-    B.Head.updateWorldMatrix(false, true);
-  }
-
-  applyCrouch() {
-    const B = this.bones, k = this.crouch;
-    const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
-    const fwd = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw));
-    // capture planted feet before moving the hips
-    const feet = ['Left', 'Right'].map((s) => ({
-      s, pos: B[s + 'Foot'].getWorldPosition(new THREE.Vector3()), q: B[s + 'Foot'].getWorldQuaternion(new THREE.Quaternion()),
-    }));
-    // drop the pelvis and shift it back slightly, lean the torso forward
-    translateBoneWorld(B.Hips, new THREE.Vector3(0, -0.42 * k, 0).addScaledVector(fwd, -0.1 * k));
-    B.Hips.updateWorldMatrix(false, true);
-    rotateBoneAxis(B.Spine, right, 0.32 * k);
-    rotateBoneAxis(B.Spine1, right, 0.12 * k);
-    B.Hips.updateWorldMatrix(false, true);
-    for (const f of feet) {
-      // knees go forward: hint is the character's right axis
-      solveTwoBone(B[f.s + 'UpLeg'], B[f.s + 'Leg'], B[f.s + 'Foot'], f.pos.clone().addScaledVector(fwd, 0.04 * k), right, 1, this.ikState[f.s[0]]);
-      setBoneWorldQuaternion(B[f.s + 'Foot'], f.q);
-      B[f.s + 'Foot'].updateWorldMatrix(false, true);
-    }
-    // counter-rotate the head to keep looking ahead
-    rotateBoneAxis(B.Neck, right, -0.25 * k);
-    B.Neck.updateWorldMatrix(false, true);
-  }
-
-  applyArm() {
-    const B = this.bones;
-    const fwd = new THREE.Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw));
-    const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
-    const k = Math.max(this.offer, this.pet);
-    let target;
-    if (this.armTarget) target = this.armTarget.clone();
-    else target = this.pos.clone().addScaledVector(fwd, 0.62).addScaledVector(right, -0.12).setY(this.pos.y + 0.55 + 0.4 * (1 - this.crouch));
-    // rest hand position from the animated pose, blended toward the target
-    const hand = B.RightHand.getWorldPosition(new THREE.Vector3());
-    const goal = hand.lerp(target, k);
-    solveTwoBone(B.RightArm, B.RightForeArm, B.RightHand, goal, new THREE.Vector3(0, -1, 0), 1, this.ikState.arm);
-    // palm up when offering food
-    if (this.offer > 0.01) {
-      const fa = B.RightHand.getWorldPosition(new THREE.Vector3()).sub(B.RightForeArm.getWorldPosition(new THREE.Vector3())).normalize();
-      rotateBoneAxis(B.RightHand, fa, -1.4 * this.offer);
-      B.RightHand.updateWorldMatrix(false, true);
-    }
+    this.motion.update(dt);
+    const P = this.motion.poses;
+    this.crouch = P.crouchAmount ?? 0;
+    this.offer = P.offerAmount ?? 0;
+    this.pet = P.petAmount ?? 0;
   }
 
   get handPosition() { return this.bones.RightHand.getWorldPosition(new THREE.Vector3()); }
